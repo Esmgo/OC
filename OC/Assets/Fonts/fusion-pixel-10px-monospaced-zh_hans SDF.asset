@@ -60,9 +60,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: fusion-pixel-10px-monospaced-zh_hans SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: 2047557858
   material: {fileID: 5586098020111991078}
-  materialHashCode: 0
+  materialHashCode: -146510334
   m_Version: 1.1.0
   m_SourceFontFileGUID: 47a94e602b7deba4c9baf9453db26ad2
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 47a94e602b7deba4c9baf9453db26ad2, type: 3}
@@ -101,8 +101,8 @@ MonoBehaviour:
   m_FreeGlyphRects:
   - m_X: 0
     m_Y: 0
-    m_Width: 1023
-    m_Height: 1023
+    m_Width: 8191
+    m_Height: 8191
   m_fontInfo:
     Name: 
     PointSize: 0
@@ -126,8 +126,8 @@ MonoBehaviour:
     AtlasWidth: 0
     AtlasHeight: 0
   atlas: {fileID: 0}
-  m_AtlasWidth: 1024
-  m_AtlasHeight: 1024
+  m_AtlasWidth: 8192
+  m_AtlasHeight: 8192
   m_AtlasPadding: 9
   m_AtlasRenderMode: 4165
   m_glyphInfoList: []
@@ -144,8 +144,8 @@ MonoBehaviour:
     pointSize: 90
     padding: 9
     packingMode: 0
-    atlasWidth: 1024
-    atlasHeight: 1024
+    atlasWidth: 8192
+    atlasHeight: 8192
     characterSetSelectionMode: 7
     characterSequence: 
     referencedFontAssetGUID: 
@@ -268,8 +268,8 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _TextureHeight: 1024
-    - _TextureWidth: 1024
+    - _TextureHeight: 8192
+    - _TextureWidth: 8192
     - _UnderlayDilate: 0
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: 0
