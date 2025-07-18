@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour
 {
     [Header("生成参数")]
-    public GameObject enemyPrefab; // 敌人预制体
+    public GameObject[] enemyPrefabs; // 敌人预制体数组，支持多种类型
     public int maxEnemyCount = 50; // 敌人最大数量
     public float spawnInterval = 1.5f; // 生成间隔（秒）
     public float spawnRadius = 8f; // 生成半径（以玩家为中心）
@@ -39,7 +39,7 @@ public class EnemyManager : MonoBehaviour
     void SpawnEnemy()
     {
         Vector2 spawnPos = GetRandomPositionAroundPlayer();
-        GameObject enemy = GetEnemyFromPool();
+        GameObject enemy = GetEnemyFromPool(spawnPos);
         enemy.transform.position = spawnPos;
         enemy.SetActive(true);
         activeEnemyCount++;
@@ -53,18 +53,22 @@ public class EnemyManager : MonoBehaviour
         return (Vector2)player.position + offset;
     }
 
-    GameObject GetEnemyFromPool()
+    GameObject GetEnemyFromPool(Vector2 spawnPos)
     {
-        // 查找未激活的敌人
+        // 随机选择一种敌人类型
+        int prefabIndex = Random.Range(0, enemyPrefabs.Length);
+        GameObject selectedPrefab = enemyPrefabs[prefabIndex];
+
+        // 查找未激活且类型匹配的敌人
         foreach (var e in enemyPool)
         {
-            if (!e.activeInHierarchy)
+            if (!e.activeInHierarchy && e.name.StartsWith(selectedPrefab.name))
                 return e;
         }
         // 池中无可用敌人，创建新对象
-        GameObject newEnemy = Instantiate(enemyPrefab);
+        GameObject newEnemy = Instantiate(selectedPrefab);
+        newEnemy.name = selectedPrefab.name + "_Pooled"; // 保证名称匹配
         newEnemy.SetActive(false);
-        // 回收时调用 OnDisable
         newEnemy.AddComponent<EnemyPoolHelper>().manager = this;
         enemyPool.Add(newEnemy);
         return newEnemy;

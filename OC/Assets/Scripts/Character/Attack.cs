@@ -51,7 +51,7 @@ public class Attack : MonoBehaviour
         Vector2 dir = (mouseWorldPos - transform.position).normalized;
 
         // ÊµÀý»¯×Óµ¯
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        GameObject bullet = BulletPool.Instance.GetBullet(transform.position, Quaternion.identity);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         if (rb != null)
         {

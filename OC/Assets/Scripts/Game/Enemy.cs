@@ -10,17 +10,17 @@ public class Enemy : MonoBehaviour
     [Title("测试属性")]
     public TextMeshProUGUI testText;
 
-    [Title("移动参数")]
+    [Header("移动参数")]
     public float moveSpeed = 2f;
 
-    [Title("属性")]
+    [Header("属性")]
     public int maxHp = 3;
-    private int hp;
+    protected int hp;
 
-    private Transform player; 
+    protected Transform player;
     public SpriteRenderer spriteRenderer; // 新增
 
-    void Awake()
+    protected virtual void Awake()
     {
         //spriteRenderer = GetComponent<SpriteRenderer>(); // 获取SpriteRenderer
 
@@ -32,11 +32,12 @@ public class Enemy : MonoBehaviour
         hp = maxHp;
     }
 
-    void OnEnable()
+    protected virtual void OnEnable()
     {
         // 每次重新启用时重置血量和状态
         hp = maxHp;
         // 如有其他需要重置的状态，在此添加
+        spriteRenderer.color = Color.white; // 重置颜色为白色
     }
 
     void Start()
@@ -44,7 +45,7 @@ public class Enemy : MonoBehaviour
         
     }
      
-    void Update()
+    protected virtual void Update()
     {
         if (player == null) return;
 
@@ -57,9 +58,10 @@ public class Enemy : MonoBehaviour
         testText.text = $"{hp}/{maxHp}";
     }
 
-    public void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         hp -= damage;
+        DamageTextPool.Instance.Show(damage, transform.position + Vector3.up * 1.2f);
         FlashSprite(); // 受伤时闪烁
         if (hp <= 0)
         {

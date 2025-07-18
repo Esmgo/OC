@@ -11,16 +11,11 @@ public class GameApplication : Singleton<GameApplication>
     public delegate void KillMilestoneHandler(int milestone);
     public event KillMilestoneHandler OnKillMilestone;
 
-    // Start is called before the first frame update
-    void Start()
+    async void Start() // 修改为异步方法
     {
         DOTween.Init().SetCapacity(200, 50);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        UIManager.Instance.RegisterPanel("MainPanel", "MainPanel");
+        await UIManager.Instance.OpenPanelAsync<MainPanel>("MainPanel"); 
     }
 
     public void AddKill()
