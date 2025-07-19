@@ -15,6 +15,12 @@ public class UIManager : MonoBehaviour
     // UI¸¸½Úµã
     public Transform uiRoot;
 
+    public void Init()
+    {
+        RegisterPanel("MainPanel", "MainPanel");
+        RegisterPanel("SelectRolePanel", "SelectRolePanel");
+    }
+
     void Awake()
     {
         if (Instance == null)

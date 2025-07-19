@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class MainPanel : UIPanel
 {
-    // Start is called before the first frame update
-    void Start()
+    public override void OnOpen()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        var btn = transform.Find("Start").GetComponent<UIButton>();
+        btn.onClick.AddListener(async () =>
+        {
+            await UIManager.Instance.OpenPanelAsync<SelectRolePanel>("SelectRolePanel");
+            UIManager.Instance.ClosePanel("MainPanel");
+        });
     }
 }

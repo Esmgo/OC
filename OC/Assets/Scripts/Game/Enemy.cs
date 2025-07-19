@@ -20,9 +20,17 @@ public class Enemy : MonoBehaviour
     protected Transform player;
     public SpriteRenderer spriteRenderer; // 新增
 
+    private Rigidbody2D rb;
+    private Tween flashTween;
+    private Color originalColor = Color.white; // 可在OnEnable缓存
+
     protected virtual void Awake()
     {
-        //spriteRenderer = GetComponent<SpriteRenderer>(); // 获取SpriteRenderer
+        rb = GetComponent<Rigidbody2D>(); // 获取Rigidbody2D
+
+        // 只在Awake缓存一次原色
+        if (spriteRenderer != null)
+            originalColor = spriteRenderer.color;
 
         // 自动查找场景中的玩家（带有Move组件的对象）
         var moveObj = FindObjectOfType<Move>();
@@ -36,26 +44,40 @@ public class Enemy : MonoBehaviour
     {
         // 每次重新启用时重置血量和状态
         hp = maxHp;
-        // 如有其他需要重置的状态，在此添加
-        spriteRenderer.color = Color.white; // 重置颜色为白色
+        // 还原颜色并Kill Tween
+        if (spriteRenderer != null)
+        {
+            if (flashTween != null && flashTween.IsActive()) flashTween.Kill();
+            spriteRenderer.color = originalColor;
+        }
     }
 
     void Start()
     {
         
     }
-     
+
     protected virtual void Update()
+    {
+        
+    }
+
+    protected virtual void FixedUpdate() 
+    {
+        Move(); // 移动逻辑
+
+        // 更新测试文本显示
+        if (testText != null)
+            testText.text = $"{hp}/{maxHp}";
+    }
+
+    protected virtual void Move()
     {
         if (player == null) return;
 
-        // 计算方向并移动
+        // 计算方向并用物理方式移动
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
-        transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
-
-
-        /// 更新测试文本显示
-        testText.text = $"{hp}/{maxHp}";
+        rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
     }
 
     public virtual void TakeDamage(int damage)
@@ -73,10 +95,9 @@ public class Enemy : MonoBehaviour
     private void FlashSprite()
     {
         if (spriteRenderer == null) return;
-        // 先杀死之前的tween，避免叠加
-        spriteRenderer.DOKill();
-        Color originalColor = spriteRenderer.color;
+        if (flashTween != null && flashTween.IsActive()) flashTween.Kill();
+
         spriteRenderer.color = Color.red;
-        spriteRenderer.DOColor(originalColor, 0.15f);
+        flashTween = spriteRenderer.DOColor(originalColor, 0.15f);
     }
 }

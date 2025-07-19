@@ -16,9 +16,13 @@ public class Move : MonoBehaviour
     private float dashTimeLeft;
     private float lastDashTime = -999f;
 
+    private Camera cam;
+    private bool facingRight = true; // 初始朝右
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        cam = Camera.main;
         // 插值设置建议在Inspector中设置
     }
 
@@ -36,6 +40,9 @@ public class Move : MonoBehaviour
             dashTimeLeft = dashDuration;
             lastDashTime = Time.time;
         }
+
+        // 鼠标位置反转
+        FlipByMouse();
     }
 
     void FixedUpdate()
@@ -51,5 +58,31 @@ public class Move : MonoBehaviour
                 isDashing = false;
             }
         }
+    }
+
+    void FlipByMouse()
+    {
+        if (cam == null) return;
+        Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
+        float mouseX = mouseWorldPos.x;
+        float playerX = transform.position.x;
+
+        // 鼠标在右侧，人物朝右；鼠标在左侧，人物朝左
+        if (mouseX > playerX && !facingRight)
+        {
+            Flip();
+        }
+        else if (mouseX < playerX && facingRight)
+        {
+            Flip();
+        }
+    }
+
+    void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 }
