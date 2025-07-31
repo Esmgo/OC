@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class EnemyManager : NetworkBehaviour
+public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager Instance { get; private set; }
 
@@ -23,7 +22,8 @@ public class EnemyManager : NetworkBehaviour
     private bool delayFinished = false;
 
     [Header("生成控制")]
-    public bool spawnEnabled = false; // 敌人生成开关
+    public bool spawnEnabled = true; // 敌人生成开关
+    //private float lastSpawnTime = 0f;
 
     void Awake()
     {
@@ -41,71 +41,78 @@ public class EnemyManager : NetworkBehaviour
         // 可选：自动查找玩家
         if (role == null)
         {
-            var moveObj = FindObjectOfType<Move>();
+            var moveObj = FindObjectOfType<MoveBase>();
             if (moveObj != null)
                 role = moveObj.transform;
         }
     }
 
-    void Update()
+    void Start()
     {
-        if (GameNetworkManager.IsLANGame && isServer && spawnEnabled)
-        {
-            if (transform.childCount < maxEnemyCount)
-            {
-                SpawnEnemy();
-            }
-        }
-        else if (!GameNetworkManager.IsLANGame && spawnEnabled)
-        {
-            if (transform.childCount < maxEnemyCount)
-            {
-                SpawnEnemyLocally();
-            }
-        }
+        spawnDelayTimer = 0f;
+        delayFinished = false;
+        timer = 0f;
     }
 
-    /// <summary>
-    /// 设置敌人生成状态
-    /// </summary>
-    /// <param name="enabled"></param>
-    [Server]
-    public void SetSpawnEnabled(bool enabled)
+    void Update()
     {
-        spawnEnabled = enabled;
-        if (enabled)
+        if (!spawnEnabled || role == null) return;
+
+        // 延迟处理
+        if (!delayFinished)
         {
-            delayFinished = false;
-            spawnDelayTimer = 0f;
+            spawnDelayTimer += Time.deltaTime;
+            if (spawnDelayTimer >= spawnDelay)
+            {
+                delayFinished = true;
+            }
+            return;
+        }
+
+        // 定时生成敌人
+        timer += Time.deltaTime;
+        if (timer >= spawnInterval && activeEnemyCount < maxEnemyCount)
+        {
+            SpawnEnemy();
             timer = 0f;
         }
     }
 
-    /// <summary>
-    /// 切换生成状态
-    /// </summary>
-    public void ToggleSpawn()
-    {
-        SetSpawnEnabled(!spawnEnabled);
-    }
-
-    [Server]
     private void SpawnEnemy()
     {
-        Vector3 spawnPosition = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), 0f);
-        GameObject enemy = Instantiate(enemyPrefabs[0], spawnPosition, Quaternion.identity, transform);
-        NetworkServer.Spawn(enemy); // 同步敌人到所有客户端
+        if (enemyPrefabs.Length == 0) return;
+
+        Vector2 spawnPosition = GetRandomPositionAroundPlayer();
+        GameObject enemy = GetEnemyFromPool(spawnPosition);
+        
+        if (enemy != null)
+        {
+            enemy.transform.position = spawnPosition;
+            enemy.SetActive(true);
+            activeEnemyCount++;
+        }
     }
 
     private void SpawnEnemyLocally()
     {
+        if (enemyPrefabs.Length == 0) return;
+        
         Vector3 spawnPosition = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), 0f);
-        Instantiate(enemyPrefabs[0], spawnPosition, Quaternion.identity, transform);
+        GameObject newEnemy = Instantiate(enemyPrefabs[0], spawnPosition, Quaternion.identity, transform);
+        
+        // 添加池助手组件
+        if (newEnemy.GetComponent<EnemyPoolHelper>() == null)
+        {
+            newEnemy.AddComponent<EnemyPoolHelper>().manager = this;
+        }
+        
+        activeEnemyCount++;
     }
 
     Vector2 GetRandomPositionAroundPlayer()
     {
         if (role == null) return Vector2.zero;
+        
         float angle = Random.Range(0f, Mathf.PI * 2f);
         float radius = Random.Range(minSpawnRadius, maxSpawnRadius);
         Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
@@ -114,6 +121,8 @@ public class EnemyManager : NetworkBehaviour
 
     GameObject GetEnemyFromPool(Vector2 spawnPos)
     {
+        if (enemyPrefabs.Length == 0) return null;
+        
         // 随机选择一种敌人类型
         int prefabIndex = Random.Range(0, enemyPrefabs.Length);
         GameObject selectedPrefab = enemyPrefabs[prefabIndex];
@@ -124,11 +133,16 @@ public class EnemyManager : NetworkBehaviour
             if (!e.activeInHierarchy && e.name.StartsWith(selectedPrefab.name))
                 return e;
         }
+        
         // 池中无可用敌人，创建新对象
         GameObject newEnemy = Instantiate(selectedPrefab);
         newEnemy.name = selectedPrefab.name + "_Pooled"; // 保证名称匹配
         newEnemy.SetActive(false);
-        newEnemy.AddComponent<EnemyPoolHelper>().manager = this;
+        
+        // 添加池助手组件
+        EnemyPoolHelper helper = newEnemy.AddComponent<EnemyPoolHelper>();
+        helper.manager = this;
+        
         enemyPool.Add(newEnemy);
         return newEnemy;
     }
@@ -140,14 +154,56 @@ public class EnemyManager : NetworkBehaviour
         activeEnemyCount = Mathf.Max(0, activeEnemyCount - 1);
     }
 
-    // 新增：清除所有敌人
+    // 清除所有敌人
     public void ClearAllEnemies()
     {
+        // 清除场景中的敌人
         foreach (Transform child in transform)
         {
             Destroy(child.gameObject);
         }
+        
+        // 清除池中的敌人
+        foreach (var enemy in enemyPool)
+        {
+            if (enemy != null)
+                Destroy(enemy);
+        }
+        
+        enemyPool.Clear();
         activeEnemyCount = 0;
+        timer = 0f;
+        spawnDelayTimer = 0f;
+        delayFinished = false;
+    }
+
+    // 启用/禁用敌人生成
+    public void SetSpawnEnabled(bool enabled)
+    {
+        spawnEnabled = enabled;
+    }
+
+    // 获取当前活跃敌人数量
+    public int GetActiveEnemyCount()
+    {
+        return activeEnemyCount;
+    }
+
+    // 手动添加敌人到池中
+    public void AddEnemyToPool(GameObject enemy)
+    {
+        if (!enemyPool.Contains(enemy))
+        {
+            enemyPool.Add(enemy);
+            
+            // 确保有池助手组件
+            EnemyPoolHelper helper = enemy.GetComponent<EnemyPoolHelper>();
+            if (helper == null)
+            {
+                helper = enemy.AddComponent<EnemyPoolHelper>();
+            }
+            helper.manager = this;
+        }
     }
 }
 
@@ -155,6 +211,7 @@ public class EnemyManager : NetworkBehaviour
 public class EnemyPoolHelper : MonoBehaviour
 {
     [HideInInspector] public EnemyManager manager;
+    
     void OnDisable()
     {
         if (manager != null)

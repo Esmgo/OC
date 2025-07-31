@@ -15,7 +15,7 @@ public class CameraFollow : MonoBehaviour
         cam = Camera.main;
         if (target == null)
         {
-            var moveObj = FindObjectOfType<Move>();
+            var moveObj = FindObjectOfType<MoveBase>();
             if (moveObj != null)
                 target = moveObj.transform;
         }

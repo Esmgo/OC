@@ -42,18 +42,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9b822e318211adf4f92dd79b0510eec2
-    m_Address: NetworkPanel
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d47167f801fcea2479d7219d8d03b457
     m_Address: SelectRolePanel
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: eaedd0c85ad6b2e448a12104a7023c71
-    m_Address: Assets/Prefabs/Test/TestRole 2.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

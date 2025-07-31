@@ -211,7 +211,7 @@ PrefabInstance:
       addedObject: {fileID: 2508237618926500903}
     - targetCorrespondingSourceObject: {fileID: -8653719598885068355, guid: 905384858c071354d9d8361336316884, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 9181766008805380693}
+      addedObject: {fileID: 7273585354638940567}
     - targetCorrespondingSourceObject: {fileID: -3037325166310885347, guid: 905384858c071354d9d8361336316884, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8218336961396439643}
@@ -259,6 +259,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edf8b13ea8a62f2479993da121cc1988, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weapon: {fileID: 0}
+  maxHealth: 0
+  currentHealth: 0
+  healthRegenRate: 0
+  moveSpeed: 0
+  dashSpeed: 0
+  dashCooldown: 0
+  damagePercent: 0
+  physicalDamage: 0
+  elementalDamage: 0
+  energyDamage: 0
+  sanity: 0
+  shield: 0
+  roleName: 
+  description: 
 --- !u!114 &3307232743143103302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,13 +302,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3119ce91de5cb346bccc57ac06ec243, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   bulletAddress: PlayerBullet
   bulletSpeed: 10
   attackInterval: 0.3
-  bulletPrefab: {fileID: 0}
 --- !u!58 &2536762319445110494
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -356,7 +367,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &9181766008805380693
+--- !u!114 &7273585354638940567
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -365,14 +376,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 3983155976421377997}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b7c499a21901574ab4f58c4d9d8e108, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 648492523
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
+  attackInterval: 1
+  physicalDamage: 0
+  elementalDamage: 0
+  energyDamage: 0
+  physicalDamageRatio: 0
+  elementalDamageRatio: 0
+  energyDamageRatio: 0
 --- !u!4 &6260003316099660426 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -1837693741466411782, guid: 905384858c071354d9d8361336316884, type: 3}

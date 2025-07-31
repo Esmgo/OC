@@ -31,23 +31,24 @@ public class Enemy : MonoBehaviour
         if (spriteRenderer != null)
             originalColor = spriteRenderer.color;
 
-        //// 自动查找场景中的玩家（带有Move组件的对象）
-        //var moveObj = FindObjectOfType<Move>();
-        //if (moveObj != null)
-        //    player = moveObj.transform;
-
         hp = maxHp;
     }
 
     protected virtual void OnEnable()
     {
-        player = EnemyManager.Instance.role; // 获取玩家角色引用
+        if (EnemyManager.Instance != null)
+        {
+            player = EnemyManager.Instance.role;
+        }
+        
         // 每次重新启用时重置血量和状态
         hp = maxHp;
-        // 还原颜色并Kill Tween
+        
+        // 还原颜色并停止闪烁动画
         if (spriteRenderer != null)
         {
-            if (flashTween != null && flashTween.IsActive()) flashTween.Kill();
+            if (flashTween != null && flashTween.IsActive()) 
+                flashTween.Kill();
             spriteRenderer.color = originalColor;
         }
     }
@@ -83,23 +84,17 @@ public class Enemy : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         hp -= damage;
-        DamageTextPool.Instance.Show(damage, transform.position + Vector3.up * 1.2f);
-        FlashSprite(); // 受伤时闪烁
-        if (hp <= 0)
+        
+        // 显示伤害文本
+        if (DamageTextPool.Instance != null)
         {
-            //// 获取击杀者
-            //var networkPlayer = EnemyManager.Instance.role.GetComponent<NetworkPlayer>();
-
-            //// 如果击杀者有网络组件，通知服务器增加击杀
-            //if (networkPlayer != null)
-            //{
-            //    networkPlayer.CmdAddKill();
-            //}
-            //else
-            //{
-            //    // 本地模式
-            //    //GameApplication.Instance.AddKill();
-            //}
+            DamageTextPool.Instance.Show(damage, transform.position + Vector3.up * 1.2f);
+        }
+        
+        FlashSprite(); // 受伤时闪烁
+        
+        if (hp <= 0)
+        {            
             gameObject.SetActive(false); // 对象池回收
         }
     } 
@@ -107,9 +102,18 @@ public class Enemy : MonoBehaviour
     private void FlashSprite()
     {
         if (spriteRenderer == null) return;
-        if (flashTween != null && flashTween.IsActive()) flashTween.Kill();
+        
+        if (flashTween != null && flashTween.IsActive()) 
+            flashTween.Kill();
 
         spriteRenderer.color = Color.red;
         flashTween = spriteRenderer.DOColor(originalColor, 0.15f);
+    }
+    
+    protected virtual void OnDisable()
+    {
+        // 停止所有动画
+        if (flashTween != null && flashTween.IsActive()) 
+            flashTween.Kill();
     }
 }

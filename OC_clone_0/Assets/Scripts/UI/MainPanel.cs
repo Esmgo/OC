@@ -11,11 +11,5 @@ public class MainPanel : UIPanel
             await UIManager.Instance.OpenPanelAsync<SelectRolePanel>("SelectRolePanel");
             UIManager.Instance.ClosePanel("MainPanel");
         });
-
-        RegisterButton("Test", async () =>
-        {
-            await UIManager.Instance.OpenPanelAsync<NetworkPanel>("NetworkPanel");
-            UIManager.Instance.ClosePanel("MainPanel");
-        });
     }
 }

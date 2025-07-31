@@ -9,18 +9,15 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class GameApplication : MonoBehaviour
 {
-    //[Header("测试")]
-    //public int currentRoleId = 0; // 当前角色ID
+    //[Header("游戏状态")]
+    //public int currentLevel = 1;
+    //public int playerScore = 0;
+    //public int killCount = 0;
 
     public static GameApplication Instance { get; private set; }
 
-    //public int killCount = 0;
-
-    //// 事件：每10个击杀
-    //public delegate void KillMilestoneHandler(int milestone);
-    //public event KillMilestoneHandler OnKillMilestone;
-
     private bool isPaused = false;
+    private bool isGameActive = false;
 
     private void Awake()
     {
@@ -46,55 +43,51 @@ public class GameApplication : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!isPaused)
-                PauseGame();
-            else
-                ResumeGame();
+            if (isGameActive)
+            {
+                if (!isPaused)
+                    PauseGame();
+                else
+                    ResumeGame();
+            }
         }
     }
 
-    //public void AddKill()
-    //{
-    //    killCount++;
-    //    if (killCount % 10 == 0)
-    //    {
-    //        OnKillMilestone?.Invoke(killCount / 10);
-    //    }
-    //}
-
-    public void GameStart()
+    public void GameStart(RoleConfiguration roleConfig, WeaponConfiguration weaponConfig)
     {
-        // 检测是否在网络模式下
-        if (NetworkClient.isConnected || NetworkServer.active)
-        {
-            // 网络模式下不需要在这里生成角色，由NetworkManager处理
-            Debug.Log("网络游戏模式已启动");
-        }
-        else
-        {
-            // 本地模式
-            LoadRole();
-            EnemyManager.Instance.SetSpawnEnabled(true);
-        }
+        LoadRole(roleConfig, weaponConfig);
+        isGameActive = true;
     }
 
-    public async Task OpenNetworkPanel()
-    {
-        // Fix for CS0311: Ensure NetworkPanel inherits from UIPanel
-        await UIManager.Instance.OpenPanelAsync<UIPanel>("NetworkPanel");
-    }
-
-    public async void LoadRole()
+    public async void LoadRole(RoleConfiguration roleConfig, WeaponConfiguration weaponConfig)
     {
         AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>("Role");
         await handle.Task;
         if (handle.Status == AsyncOperationStatus.Succeeded)
         {
             GameObject roleObj = Instantiate(handle.Result, Vector3.zero, Quaternion.identity);
-            roleObj.name = "PlayerRole"; // 设置角色名称
-            await roleObj.GetComponentInChildren<Attack>().InitAsync("Bullet-Circle", 10f, 0.3f, null); // 异步加载子弹预制体
-            Camera.main.GetComponent<CameraFollow>().target = roleObj.transform; // 设置摄像机跟随角色
-            EnemyManager.Instance.role = roleObj.transform; // 设置敌人管理器的玩家角色
+            roleObj.name = "PlayerRole";
+            roleObj.GetComponent<Character>().Init(roleConfig, weaponConfig);
+
+            // 异步加载子弹预制体
+            var attackComponent = roleObj.GetComponentInChildren<Attack>();
+            if (attackComponent != null)
+            {
+                await attackComponent.InitAsync("Bullet-Circle", 10f, 0.3f, null);
+            }
+
+            // 设置摄像机跟随角色
+            var cameraFollow = Camera.main.GetComponent<CameraFollow>();
+            if (cameraFollow != null)
+            {
+                cameraFollow.target = roleObj.transform;
+            }
+
+            // 设置敌人管理器的玩家角色
+            if (EnemyManager.Instance != null)
+            {
+                EnemyManager.Instance.role = roleObj.transform;
+            }
         }
         else
         {
@@ -108,7 +101,6 @@ public class GameApplication : MonoBehaviour
     {
         isPaused = true;
         Time.timeScale = 0f;
-        EnemyManager.Instance.SetSpawnEnabled(false);
         await UIManager.Instance.OpenPanelAsync<PausePanel>("PausePanel");
     }
 
@@ -118,37 +110,27 @@ public class GameApplication : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         UIManager.Instance.ClosePanel("PausePanel");
-        EnemyManager.Instance.SetSpawnEnabled(true);
     }
 
     // 退出游戏（重置场景/回主界面）
     public async void ExitGame()
     {
         isPaused = false;
+        isGameActive = false;
         Time.timeScale = 1f;
         UIManager.Instance.ClosePanel("PausePanel");
-        
-        // 如果在网络模式，停止网络
-        if (NetworkClient.isConnected || NetworkServer.active)
-        {
-            var networkManager = FindObjectOfType<GameNetworkManager>();
-            if (networkManager != null)
-            {
-                networkManager.StopNetwork();
-            }
-        }
-        else
-        {
+
             // 清除所有敌人
-            EnemyManager.Instance.SetSpawnEnabled(false);
-            EnemyManager.Instance.ClearAllEnemies();
-            
+            if (EnemyManager.Instance != null)
+            {
+                EnemyManager.Instance.ClearAllEnemies();
+            }
+
             // 清除玩家
             var player = GameObject.Find("PlayerRole");
             if (player != null)
                 Destroy(player);
-        }
-        
+
         // 返回主界面
         await UIManager.Instance.OpenPanelAsync<MainPanel>("MainPanel");
     }

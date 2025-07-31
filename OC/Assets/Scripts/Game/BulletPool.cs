@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class BulletPool : NetworkBehaviour
+public class BulletPool : MonoBehaviour
 {
     public static BulletPool Instance { get; private set; }
 
@@ -18,31 +17,10 @@ public class BulletPool : NetworkBehaviour
         else
             Destroy(gameObject);
 
-        if (GameNetworkManager.IsLANGame)
-        {
-            InitializePoolOnServer();
-        }
-        else
-        {
-            InitializePoolLocally();
-        }
+        InitializePool();
     }
 
-    private void InitializePoolOnServer()
-    {
-        if (isServer)
-        {
-            for (int i = 0; i < poolSize; i++)
-            {
-                var obj = Instantiate(bulletPrefab, transform);
-                obj.SetActive(false);
-                NetworkServer.Spawn(obj); // 在服务器上生成并同步到客户端
-                pool.Enqueue(obj);
-            }
-        }
-    }
-
-    private void InitializePoolLocally()
+    private void InitializePool()
     {
         for (int i = 0; i < poolSize; i++)
         {
@@ -63,11 +41,6 @@ public class BulletPool : NetworkBehaviour
         if (bulletScript != null)
         {
             bulletScript.ResetState();
-        }
-
-        if (GameNetworkManager.IsLANGame && isServer)
-        {
-            NetworkServer.Spawn(bullet); // 确保新生成的子弹在局域网模式下同步到客户端
         }
 
         return bullet;
