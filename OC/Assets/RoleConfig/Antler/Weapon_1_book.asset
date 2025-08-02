@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e640d6ae78b242148a2e4d1e54ddf792, type: 3}
   m_Name: Weapon_1_book
   m_EditorClassIdentifier: 
-  weaponName: "\u4E66"
+  weaponName: Book
   attackInterval: 0.6
   weakenedAttackInterval: 20
   weakenedDamageReduction: 20

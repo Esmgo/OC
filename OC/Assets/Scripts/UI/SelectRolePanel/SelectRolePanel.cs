@@ -51,11 +51,11 @@ public class SelectRolePanel : UIPanel
         InformationField.RefreshWeaponIcon(config);
         if (selectedWeaponConfig != null && config.weaponConfig.Contains(selectedWeaponConfig))
         {
-            InformationField.ShowWeaponInfo(selectedWeaponConfig);
+            EventCenter.Publish<WeaponSelectedEvent, WeaponConfiguration>(selectedWeaponConfig);
         }
         else
         {
-            InformationField.ShowWeaponInfo(config.weaponConfig[0]);
+            EventCenter.Publish<WeaponSelectedEvent, WeaponConfiguration>(config.weaponConfig[0]);
         }
     }
 
