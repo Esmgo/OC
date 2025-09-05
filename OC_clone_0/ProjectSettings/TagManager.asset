@@ -11,12 +11,12 @@ TagManager:
   - Background
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Weapon
+  - Enemy
+  - Role
+  - Bullet
+  - Item
+  - BuffCircle
   - 
   - 
   - 

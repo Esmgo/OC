@@ -6,29 +6,46 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Weapon Configuration", menuName = "Game/Weapon Configuration")]
 public class WeaponConfiguration : ScriptableObject
 {
-    [Header("武器属性")]
+    [Header("通用武器属性")]
     [Tooltip("名字")]
     public string weaponName = "Default Weapon";
 
-    [Tooltip("攻击间隔")]
+    [Tooltip("攻击间隔(秒)")]
     public float attackInterval = 1.0f;
 
-    [Tooltip("虚弱状态攻击间隔增加（百分比）")]
-    public float weakenedAttackInterval = 0.2f;
+    [Tooltip("攻击目标层")]
+    public LayerMask targetLayer;
 
-    [Tooltip("虚弱状态伤害衰减（百分比）")]
-    public float weakenedDamageReduction = 0.2f;
+    [Tooltip("击退力度")]
+    public float knockBackForce = 5.0f;
 
-    [Tooltip("子弹预制体")]
-    public GameObject bulletPrefab;
+    [Tooltip("攻击伤害(小数百分比)")]
+    public float damagePercent = 1;
 
-    [Header("伤害占比")]
-    [Tooltip("物理伤害占比")]
-    public float physicalDamageRatio = 0;
+    [Tooltip("每次攻击消耗能量")]
+    public int energyCostPerAttack = 0;
 
-    [Tooltip("元素伤害占比")]
-    public float elementalDamageRatio = 0;
+    [Header("近战攻击属性")]
+    [Tooltip("攻击距离")]
+    public float attackRange = 5.0f;
 
-    [Tooltip("异能伤害占比")]
-    public float energyDamageRatio = 0;
+    [Tooltip("近战攻击角度(度)")]
+    public float meleeAttackAngle = 45f;
+
+    [Tooltip("近战攻击角度修正(度)")]
+    public float meleeFixAngle = 0f;
+
+    [Header("远程攻击属性")]
+    [Tooltip("子弹AA地址")]
+    public string bulletAddress;
+
+    [Tooltip("子弹速度")]
+    public float bulletSpeed = 10.0f;
+
+    [Header("伤害")]
+    [Tooltip("物理伤害")]
+    public float physicalDamage = 0;
+
+    [Tooltip("异能伤害")]
+    public float energyDamage = 0;
 }

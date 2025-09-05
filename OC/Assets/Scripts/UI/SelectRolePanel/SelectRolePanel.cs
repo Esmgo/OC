@@ -41,7 +41,7 @@ public class SelectRolePanel : UIPanel
     {
         selectedRoleConfig = config;
         roleList.SelectRole(config);
-        Debug.Log($"已选择角色: {config.roleName}");
+        //Debug.Log($"已选择角色: {config.roleName}");
         if(!isWeaponIconCreated)
         {
             InformationField.CreatWeaponIcon(config);
@@ -62,7 +62,7 @@ public class SelectRolePanel : UIPanel
     private void OnWeaponSelected(WeaponConfiguration config)
     {
         selectedWeaponConfig = config;
-        Debug.Log($"已选择武器: {config.weaponName}");
+        //Debug.Log($"已选择武器: {config.weaponName}");
         if(selectedRoleConfig != null && selectedRoleConfig.weaponConfig.Contains(config))
         {
             InformationField.ShowWeaponInfo(config);

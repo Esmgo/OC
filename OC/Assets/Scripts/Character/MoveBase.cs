@@ -1,3 +1,4 @@
+using GameEvents;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,13 +20,13 @@ public class MoveBase : MonoBehaviour
     private Camera cam;
     private bool facingRight = true; // 初始朝右
     private Animator animator;
+    private bool isFlipPaused = false; // 是否暂停翻转
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         cam = Camera.main;
         animator = GetComponent<Animator>();
-        // 插值设置建议在Inspector中设置
     }
 
     /// <summary>
@@ -45,6 +46,25 @@ public class MoveBase : MonoBehaviour
         moveInput = Vector2.zero;
         
         Debug.Log($"MoveBase 初始化完成 - 移动速度: {moveSpeed}, 冲刺速度: {dashSpeed}");
+    }
+
+    public virtual void UpdateData(float moveSpeed, float dashSpeed, float dashCooldown)
+    {
+        this.moveSpeed = moveSpeed;
+        this.dashSpeed = dashSpeed;
+        this.dashCooldown = dashCooldown;
+    }
+
+    private void OnEnable()
+    {
+        EventCenter.Subscribe<AttackStartEvent>(PauseFlip);
+        EventCenter.Subscribe<AttackEndEvent>(ResumeFlip);
+    }
+
+    private void OnDestroy()
+    {
+        EventCenter.Unsubscribe<AttackStartEvent>(PauseFlip);
+        EventCenter.Unsubscribe<AttackEndEvent>(ResumeFlip);
     }
 
     void Update()
@@ -71,7 +91,7 @@ public class MoveBase : MonoBehaviour
     {
         Dash();
         // 更新冲刺状态
-        UpdateDash();
+        DashTimer();
     }
 
     /// <summary>
@@ -110,9 +130,9 @@ public class MoveBase : MonoBehaviour
     }
 
     /// <summary>
-    /// 更新冲刺状态
+    /// 冲刺计时器
     /// </summary>
-    void UpdateDash()
+    void DashTimer()
     {
         if (isDashing)
         {
@@ -143,13 +163,16 @@ public class MoveBase : MonoBehaviour
         float playerX = transform.position.x;
 
         // 鼠标在右侧，人物朝右；鼠标在左侧，人物朝左
-        if (mouseX > playerX && !facingRight)
+        if (!isFlipPaused)
         {
-            Flip();
-        }
-        else if (mouseX < playerX && facingRight)
-        {
-            Flip();
+            if (mouseX > playerX && !facingRight)
+            {
+                Flip();
+            }
+            else if (mouseX < playerX && facingRight)
+            {
+                Flip();
+            }
         }
     }
 
@@ -161,13 +184,13 @@ public class MoveBase : MonoBehaviour
         transform.localScale = scale;
     }
 
-    /// <summary>
-    /// 获取当前移动状态信息
-    /// </summary>
-    public virtual void GetMovementInfo(out float currentSpeed, out bool isDashingState, out float dashCooldownRemaining)
+    public void PauseFlip()
     {
-        currentSpeed = rb != null ? rb.velocity.magnitude : 0f;
-        isDashingState = isDashing;
-        dashCooldownRemaining = Mathf.Max(0f, (lastDashTime + dashCooldown) - Time.time);
+        isFlipPaused = true;
+    }
+
+    private void ResumeFlip()
+    {
+        isFlipPaused = false;
     }
 }

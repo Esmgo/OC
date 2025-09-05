@@ -132,7 +132,7 @@ public class ObjectPool : MonoBehaviour
             activeObjects.Remove(obj);
             availableObjects.Enqueue(obj);
             activeCount = activeObjects.Count;
-
+            obj.transform.SetParent(transform); // 重置父级为池对象
             // 重置对象状态
             ResetObject(obj);
         }
@@ -200,5 +200,60 @@ public class ObjectPool : MonoBehaviour
         {
             CreateNewObject();
         }
+    }
+
+    /// <summary>
+    /// 回收所有活跃对象到池中
+    /// </summary>
+    public void RecycleAllActiveObjects()
+    {
+        // 创建活跃对象的副本列表，避免在迭代过程中修改集合
+        var activeObjectsList = new List<GameObject>(activeObjects);
+        
+        Debug.Log($"开始回收池 {poolName} 的 {activeObjectsList.Count} 个活跃对象");
+        
+        foreach (var obj in activeObjectsList)
+        {
+            if (obj != null)
+            {
+                ReturnObject(obj);
+            }
+        }
+        
+        Debug.Log($"池 {poolName} 回收完成，当前活跃对象数: {activeObjects.Count}");
+    }
+
+    /// <summary>
+    /// 强制回收所有活跃对象（包括处理异常情况）
+    /// </summary>
+    public void ForceRecycleAllActiveObjects()
+    {
+        Debug.Log($"强制回收池 {poolName} 的所有活跃对象");
+        
+        // 先尝试正常回收
+        var activeObjectsList = new List<GameObject>(activeObjects);
+        foreach (var obj in activeObjectsList)
+        {
+            if (obj != null)
+            {
+                // 先停用对象，再返回池中
+                obj.SetActive(false);
+                ReturnObject(obj);
+            }
+        }
+        
+        // 清理可能残留的引用
+        activeObjects.RemoveWhere(obj => obj == null);
+        activeCount = activeObjects.Count;
+        
+        Debug.Log($"池 {poolName} 强制回收完成，剩余活跃对象数: {activeObjects.Count}");
+    }
+
+    /// <summary>
+    /// 获取所有活跃对象的只读副本
+    /// </summary>
+    public IReadOnlyCollection<GameObject> GetActiveObjects()
+    {
+        return new List<GameObject>(activeObjects);
     }
 }

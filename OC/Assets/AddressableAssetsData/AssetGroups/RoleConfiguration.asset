@@ -17,8 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: fc4fa045311f1034099635b1d2ac0496
   m_SerializeEntries:
-  - m_GUID: 221e9f17d98e5b143922924a7ac6ee75
-    m_Address: Assets/RoleConfig/Test.asset
+  - m_GUID: 09ddd37af717b5944bf08c8bf020ad03
+    m_Address: Ming_config
     m_ReadOnly: 0
     m_SerializedLabels:
     - RoleConfiguration
@@ -26,14 +26,12 @@ MonoBehaviour:
   - m_GUID: 2a43b81e46db56b4194cddaaaef333ae
     m_Address: ALN
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - RoleConfiguration
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ccaabacea39c4fd419e40f3ac921a971
     m_Address: Assets/RoleConfig/Test 1.asset
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - RoleConfiguration
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fab383c31a3400f4ea68d31b287589ad
     m_Address: Antler_config

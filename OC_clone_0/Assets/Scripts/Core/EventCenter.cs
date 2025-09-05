@@ -93,7 +93,7 @@ public class EventCenter : MonoBehaviour
         // 更新计数
         eventCounts[eventType] = eventCounts.GetValueOrDefault(eventType, 0) + 1;
 
-        Debug.Log($"订阅事件: {eventType.Name}, 当前订阅数: {eventCounts[eventType]}");
+        //Debug.Log($"订阅事件: {eventType.Name}, 当前订阅数: {eventCounts[eventType]}");
     }
 
     #endregion
@@ -206,7 +206,7 @@ public class EventCenter : MonoBehaviour
             try
             {
                 (eventDelegate as Action)?.Invoke();
-                Debug.Log($"发布事件: {eventType.Name}");
+                //Debug.Log($"发布事件: {eventType.Name}");
             }
             catch (Exception e)
             {
@@ -247,7 +247,7 @@ public class EventCenter : MonoBehaviour
             try
             {
                 (eventDelegate as Action<TArg1, TArg2>)?.Invoke(arg1, arg2);
-                Debug.Log($"发布事件: {eventType.Name}, 参数: {arg1}, {arg2}");
+                //Debug.Log($"发布事件: {eventType.Name}, 参数: {arg1}, {arg2}");
             }
             catch (Exception e)
             {
@@ -268,7 +268,7 @@ public class EventCenter : MonoBehaviour
             try
             {
                 (eventDelegate as Action<TArg1, TArg2, TArg3>)?.Invoke(arg1, arg2, arg3);
-                Debug.Log($"发布事件: {eventType.Name}, 参数: {arg1}, {arg2}, {arg3}");
+                //Debug.Log($"发布事件: {eventType.Name}, 参数: {arg1}, {arg2}, {arg3}");
             }
             catch (Exception e)
             {

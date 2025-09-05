@@ -1,52 +1,90 @@
+using GameEvents;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Weapon : MonoBehaviour
 {
-    private Character role;
-    public float damage => role.physicalDamage * physicalDamageRatio + 
-                          role.elementalDamage * elementalDamageRatio + 
-                          role.energyDamage * energyDamageRatio;
+    [Header("通用武器属性")]
+    [Tooltip("名字")]
+    [SerializeField] protected string weaponName = "Default Weapon";
 
-    [Header("武器属性")]
+    [Tooltip("攻击间隔(秒)")]
+    [SerializeField] protected float attackInterval = 1.0f;
 
-    [Tooltip("攻击间隔")]
-    public float attackInterval = 1.0f;
+    [Tooltip("攻击目标层")]
+    [SerializeField] protected LayerMask targetLayer;
 
-    [Header("攻击属性")]
-    [Tooltip("攻击伤害(百分比)")]
-    public float damagePercent = 1;
+    [Tooltip("击退力度")]
+    [SerializeField] protected float knockBackForce = 5.0f;
 
-    [Tooltip("虚弱状态攻击间隔")]
-    public float weakenedAttackInterval = 1.0f;
+    [Tooltip("伤害(倍率)")]
+    [SerializeField] protected float damagePercent = 1;
 
-    [Tooltip("虚弱状态伤害")]
-    public float weakenedDamage = 0.2f;
+    [Tooltip("每次攻击消耗能量")]
+    [SerializeField] protected int energyCostPerAttack = 0;
 
-    [Tooltip("子弹预制体")]
-    public GameObject bulletPrefab;
+    [Header("近战攻击属性")]
+    [Tooltip("攻击距离")]
+    [SerializeField] protected float attackRange = 5.0f;
 
-    [Header("伤害占比")]
-    [Tooltip("物理伤害占比")]
-    public float physicalDamageRatio = 0;
+    [Tooltip("近战攻击角度(度)")]
+    [SerializeField] protected float meleeAttackAngle = 45f;
 
-    [Tooltip("元素伤害占比")]
-    public float elementalDamageRatio = 0;
+    [Tooltip("近战攻击角度修正(度)")]
+    [SerializeField] protected float meleeFixAngle = 0f;
 
-    [Tooltip("异能伤害占比")]
-    public float energyDamageRatio = 0;
+    [Header("远程攻击属性")]
+    [Tooltip("子弹AA地址")]
+    [SerializeField] protected string bulletAddress;
+
+    [Tooltip("子弹速度")]
+    [SerializeField] protected float bulletSpeed = 10.0f;
+
+    [Header("伤害")]
+    [Tooltip("物理伤害")]
+    [SerializeField] protected float physicalDamage = 0;
+
+    [Tooltip("异能伤害")]
+    [SerializeField] protected float energyDamage = 0;
+
+    protected float lastAttackTime = -999f; // 上次攻击时间
+
+    protected Character role;
+
+    protected float damage => (physicalDamage + energyDamage) * damagePercent;
 
     public void Init(Character role, WeaponConfiguration weaponConfig)
     {
         this.role = role;
+
+        weaponName = weaponConfig.weaponName;
         attackInterval = weaponConfig.attackInterval;
-        physicalDamageRatio = weaponConfig.physicalDamageRatio;
-        elementalDamageRatio = weaponConfig.elementalDamageRatio;
-        energyDamageRatio = weaponConfig.energyDamageRatio;
-        weakenedAttackInterval = attackInterval * (100 + weaponConfig.weakenedAttackInterval)/100;
-        //weakenedDamage = ;
+        targetLayer = weaponConfig.targetLayer;
+        knockBackForce = weaponConfig.knockBackForce;
+        energyCostPerAttack = weaponConfig.energyCostPerAttack;
+        damagePercent = weaponConfig.damagePercent;
+
+        attackRange = weaponConfig.attackRange;
+        meleeAttackAngle = weaponConfig.meleeAttackAngle;
+        meleeFixAngle = weaponConfig.meleeFixAngle;
+
+        bulletAddress = weaponConfig.bulletAddress;
+        bulletSpeed = weaponConfig.bulletSpeed;
+        
+        physicalDamage = weaponConfig.physicalDamage;
+        energyDamage = weaponConfig.energyDamage;
     }
 
-    public virtual void Attack() { }
+    public void UpdateData(float attackInterval, float damagePercent)
+    {
+        this.attackInterval = attackInterval;
+        this.damagePercent = damagePercent;
+    }
+
+    protected int GetDamage()
+    {
+        return (int)(damage * damagePercent);
+    }
 }

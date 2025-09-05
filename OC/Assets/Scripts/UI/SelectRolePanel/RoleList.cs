@@ -44,10 +44,7 @@ public class RoleList : MonoBehaviour
             return;
         }
         Debug.Log("开始初始化角色列表...");
-        
-        // 订阅事件
-        SubscribeToEvents();
-        
+             
         // 加载所有角色配置
         await LoadAllRoleConfigurations();
         
@@ -56,7 +53,7 @@ public class RoleList : MonoBehaviour
         
         isInitialized = true;
         
-        Debug.Log($"角色列表初始化完成，共加载 {loadedRoleConfigs.Count} 个角色");
+        //Debug.Log($"角色列表初始化完成，共加载 {loadedRoleConfigs.Count} 个角色");
     }
 
     public void SelectRole(RoleConfiguration config)
@@ -81,9 +78,7 @@ public class RoleList : MonoBehaviour
     private async Task LoadAllRoleConfigurations()
     {
         try
-        {
-            Debug.Log($"正在加载分组 '{roleGroupLabel}' 中的所有角色配置...");
-            
+        {            
             // 使用Addressables.LoadAssetsAsync加载指定标签下的所有资源
             roleConfigsHandle = Addressables.LoadAssetsAsync<RoleConfiguration>(roleGroupLabel,null/*回调函数（可选）*/);
             await roleConfigsHandle.Task;   // 等待加载完成
@@ -98,7 +93,7 @@ public class RoleList : MonoBehaviour
                     if (roleConfig != null)
                     {
                         loadedRoleConfigs.Add(roleConfig);
-                        Debug.Log($"成功加载角色配置: {roleConfig.roleName}");
+                        //Debug.Log($"成功加载角色配置: {roleConfig.roleName}");
                     }
                     else
                     {
@@ -106,7 +101,7 @@ public class RoleList : MonoBehaviour
                     }
                 }
                 
-                Debug.Log($"分组加载完成，共加载 {loadedRoleConfigs.Count} 个有效角色配置");
+                //Debug.Log($"分组加载完成，共加载 {loadedRoleConfigs.Count} 个有效角色配置");
             }
             else
             {
@@ -229,16 +224,6 @@ public class RoleList : MonoBehaviour
     
     #region 事件处理
     
-    private void SubscribeToEvents()
-    {
-        // 订阅角色配置管理器的配置加载完成事件
-        EventCenter.Subscribe<ConfigurationLoadedEvent, string>(OnConfigurationLoaded);
-    }
-    
-    private void UnsubscribeFromEvents()
-    {
-        EventCenter.Unsubscribe<ConfigurationLoadedEvent, string>(OnConfigurationLoaded);
-    }
     
     private void OnConfigurationLoaded(string configurationType)
     {
@@ -255,9 +240,6 @@ public class RoleList : MonoBehaviour
     
     private void OnDestroy()
     {
-        // 取消事件订阅
-        UnsubscribeFromEvents();
-        
         // 释放Addressables资源
         if (roleConfigsHandle.IsValid())
         {

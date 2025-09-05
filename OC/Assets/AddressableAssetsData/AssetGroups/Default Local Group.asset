@@ -17,18 +17,23 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: d0046db26ebd27140ad3eeee95a65a39
   m_SerializeEntries:
-  - m_GUID: 09aaffcc25733f546a6177e83e8e2ef8
-    m_Address: Role
+  - m_GUID: 004f597f0c2478343ac33e6783e0acca
+    m_Address: ShopUI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 25a7f18618b2fd4458abfadf2e18e67e
-    m_Address: Bullet-Circle
+  - m_GUID: 14efd1c9a80fdcb4c954d1f00e886a72
+    m_Address: ItemForSale
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6fc4d0654f6ccf740a6884632d0b1e41
-    m_Address: Bullet-Circle-Red
+  - m_GUID: 67631dee45f6ed4418cf0d65af5c64e5
+    m_Address: TestRole_Config
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6df3056028de70c4a933c3fa7b0cad07
+    m_Address: Ming
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -41,6 +46,22 @@ MonoBehaviour:
     m_Address: PausePanel
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aff8225e1bd3959449a47cc74e4ca63c
+    m_Address: FightUI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3f678430bce14d4792ad20a55d4bc99
+    m_Address: TestRole
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c32b2ae54a507694088b040398e4cc35
+    m_Address: Effect_Boom_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effect
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d47167f801fcea2479d7219d8d03b457
     m_Address: SelectRolePanel

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5feb1c53e2577c342aaf4faa4167dceb, type: 3}
+  m_Name: Ming
+  m_EditorClassIdentifier: 
+  roleName: "\u4E0E\u6D3A"
+  description: "\u89D2\u8272\u63CF\u8FF0..."
+  themeColor: {r: 0.98490566, g: 0.35366112, b: 0.2806052, a: 1}
+  rolePrefabAddress: Ming
+  maxHealth: 100
+  healthRegenRate: 0
+  maxEnergy: 100
+  energyRegenRate: 1
+  roleIcon: {fileID: 1334636691614601774, guid: ceda3e63dd33db14aa9c0faa1838740d, type: 3}
+  standImage: {fileID: 0}
+  moveSpeed: 12
+  dashSpeed: 20
+  dashCooldown: 0.5
+  attackInterval: 0.3
+  damagePercent: 0
+  physicalDamage: 20
+  elementalDamage: 20
+  energyDamage: 20
+  shield: 0
+  sanity: 100
+  weaponConfig:
+  - {fileID: 11400000, guid: 342908676bc340048841ce5fd8c98bdf, type: 2}

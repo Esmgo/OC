@@ -29,8 +29,8 @@ public class RoleConfiguration : ScriptableObject
     [Tooltip("生命回复(每秒)")]
     public float healthRegenRate = 0f;
 
-    [Tooltip("能量")]
-    public float energy = 100f;
+    [Tooltip("最大能量")]
+    public int maxEnergy = 100;
 
     [Tooltip("能量回复(每秒)")]
     public float energyRegenRate = 0f;
@@ -54,11 +54,11 @@ public class RoleConfiguration : ScriptableObject
     [Tooltip("攻击间隔")]
     public float attackInterval = 0.3f;
 
+    [Tooltip("伤害（倍率）")]
+    public float damagePercent = 0f;
+
     [Tooltip("物理伤害")]
     public float physicalDamage = 0f;
-
-    [Tooltip("元素伤害")]
-    public float elementalDamage = 0f;
 
     [Tooltip("异能伤害")]
     public float energyDamage = 0f;

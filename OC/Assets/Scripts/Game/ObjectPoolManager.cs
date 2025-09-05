@@ -172,6 +172,97 @@ public class ObjectPoolManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 回收指定池的所有活跃对象
+    /// </summary>
+    /// <param name="poolName">池名称</param>
+    public void RecycleAllActiveObjects(string poolName)
+    {
+        if (pools.TryGetValue(poolName, out ObjectPool pool))
+        {
+            pool.RecycleAllActiveObjects();
+        }
+        else
+        {
+            Debug.LogWarning($"对象池 {poolName} 不存在，无法回收活跃对象");
+        }
+    }
+
+    /// <summary>
+    /// 强制回收指定池的所有活跃对象
+    /// </summary>
+    /// <param name="poolName">池名称</param>
+    public void ForceRecycleAllActiveObjects(string poolName)
+    {
+        if (pools.TryGetValue(poolName, out ObjectPool pool))
+        {
+            pool.ForceRecycleAllActiveObjects();
+        }
+        else
+        {
+            Debug.LogWarning($"对象池 {poolName} 不存在，无法强制回收活跃对象");
+        }
+    }
+
+    /// <summary>
+    /// 回收所有池的所有活跃对象
+    /// </summary>
+    public void RecycleAllActiveObjectsInAllPools()
+    {
+        Debug.Log("开始回收所有池的活跃对象");
+        
+        foreach (var kvp in pools)
+        {
+            kvp.Value.RecycleAllActiveObjects();
+        }
+        
+        Debug.Log("所有池的活跃对象回收完成");
+    }
+
+    /// <summary>
+    /// 强制回收所有池的所有活跃对象
+    /// </summary>
+    public void ForceRecycleAllActiveObjectsInAllPools()
+    {
+        Debug.Log("开始强制回收所有池的活跃对象");
+        
+        foreach (var kvp in pools)
+        {
+            kvp.Value.ForceRecycleAllActiveObjects();
+        }
+        
+        Debug.Log("所有池的活跃对象强制回收完成");
+    }
+
+    /// <summary>
+    /// 获取指定池的所有活跃对象
+    /// </summary>
+    /// <param name="poolName">池名称</param>
+    /// <returns>活跃对象集合</returns>
+    public IReadOnlyCollection<GameObject> GetActiveObjects(string poolName)
+    {
+        if (pools.TryGetValue(poolName, out ObjectPool pool))
+        {
+            return pool.GetActiveObjects();
+        }
+        
+        return new List<GameObject>();
+    }
+
+    /// <summary>
+    /// 获取所有池的活跃对象总数
+    /// </summary>
+    /// <returns>总活跃对象数</returns>
+    public int GetTotalActiveObjectsCount()
+    {
+        int total = 0;
+        foreach (var pool in pools.Values)
+        {
+            total += pool.GetStats().activeObjects;
+        }
+        return total;
+    }
+
     void OnDestroy()
     {
         ClearAllPools();

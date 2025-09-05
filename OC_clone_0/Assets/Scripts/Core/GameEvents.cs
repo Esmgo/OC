@@ -36,6 +36,8 @@ namespace GameEvents
 
     #region 角色事件
 
+    public struct PlayerAttributeModifierChangedEvent : IGameEvent { }
+
     /// <summary>
     /// 角色生成事件
     /// </summary>
@@ -74,35 +76,28 @@ namespace GameEvents
 
     #region 战斗事件
 
+
+    public struct AttackStartEvent : IGameEvent { }
+
+    public struct AttackEndEvent : IGameEvent { }
+
     /// <summary>
     /// 攻击事件
     /// 参数: 攻击者Transform, 目标Transform, 伤害值
     /// </summary>
     public struct AttackEvent : IGameEvent { }
 
-    /// <summary>
-    /// 击杀事件
-    /// 参数: 击杀者Transform, 被击杀者Transform
-    /// </summary>
-    public struct KillEvent : IGameEvent { }
+    public struct WaveStartEvent : IGameEvent { }
 
-    /// <summary>
-    /// 暴击事件
-    /// 参数: 攻击者Transform, 目标Transform, 暴击伤害
-    /// </summary>
-    public struct CriticalHitEvent : IGameEvent { }
+    public struct EnergyChangeEvent : IGameEvent { }
 
-    /// <summary>
-    /// 子弹发射事件
-    /// 参数: 发射位置, 方向, 子弹类型
-    /// </summary>
-    public struct BulletFiredEvent : IGameEvent { }
+    public struct EnergyDepletedEvent : IGameEvent { }
 
-    /// <summary>
-    /// 子弹击中事件
-    /// 参数: 击中位置, 目标Transform, 伤害值
-    /// </summary>
-    public struct BulletHitEvent : IGameEvent { }
+    public struct WeakOverEvent : IGameEvent { }
+
+    public struct HPChangeEvent : IGameEvent { }
+
+    public struct UpdateInfoDisplayEvent : IGameEvent { }
 
     #endregion
 
@@ -153,18 +148,6 @@ namespace GameEvents
     #region 分数和经验事件
 
     /// <summary>
-    /// 分数改变事件
-    /// 参数: 新分数, 增加的分数
-    /// </summary>
-    public struct ScoreChangedEvent : IGameEvent { }
-
-    /// <summary>
-    /// 经验值改变事件
-    /// 参数: 新经验值, 增加的经验值, 当前等级
-    /// </summary>
-    public struct ExperienceChangedEvent : IGameEvent { }
-
-    /// <summary>
     /// 击杀数改变事件
     /// 参数: 新击杀数, 增加的击杀数
     /// </summary>
@@ -196,42 +179,15 @@ namespace GameEvents
 
     #region 系统事件
 
+    public struct SetFlashEvent : IGameEvent { }
 
     public struct RoleSelectedEvent : IGameEvent { }
 
-
     public struct WeaponSelectedEvent : IGameEvent { }
 
+    public struct GetCoinEvent : IGameEvent { }
 
-    /// <summary>
-    /// 对象池创建事件
-    /// 参数: 池名称, 池大小
-    /// </summary>
-    public struct ObjectPoolCreatedEvent : IGameEvent { }
-
-    /// <summary>
-    /// 对象池对象获取事件
-    /// 参数: 池名称, 获取的对象
-    /// </summary>
-    public struct ObjectPoolObjectRetrievedEvent : IGameEvent { }
-
-    /// <summary>
-    /// 对象池对象返回事件
-    /// 参数: 池名称, 返回的对象
-    /// </summary>
-    public struct ObjectPoolObjectReturnedEvent : IGameEvent { }
-
-    /// <summary>
-    /// 资源加载完成事件
-    /// 参数: 资源地址, 资源对象
-    /// </summary>
-    public struct ResourceLoadedEvent : IGameEvent { }
-
-    /// <summary>
-    /// 配置加载完成事件
-    /// 参数: 配置类型名称
-    /// </summary>
-    public struct ConfigurationLoadedEvent : IGameEvent { }
+    public struct GetItemEvent : IGameEvent { }
 
     #endregion
 

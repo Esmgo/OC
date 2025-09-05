@@ -20,7 +20,8 @@ public class UIManager : MonoBehaviour
         RegisterPanel("MainPanel", "MainPanel");
         RegisterPanel("SelectRolePanel", "SelectRolePanel");
         RegisterPanel("PausePanel", "PausePanel");
-        RegisterPanel("NetworkPanel", "NetworkPanel");
+        RegisterPanel("FightUI", "FightUI");
+        RegisterPanel("ShopUI", "ShopUI");
     }
 
     void Awake()
