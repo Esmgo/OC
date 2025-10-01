@@ -21,7 +21,6 @@ namespace BuffSystem
     /// <summary>
     /// 狂暴Buff：攻击间隔减少 + 移动速度加快 + 伤害增加
     /// </summary>
-    [System.Serializable]
     public class BerserkBuff : Buff
     {
         public BerserkBuff()
@@ -38,7 +37,7 @@ namespace BuffSystem
             if (targetModifier == null) return;
 
             targetModifier.AddModifier(AttributeType.moveSpeedModifier, ModificationType.Add, 1f);
-            targetModifier.AddModifier(AttributeType.attackIntervalModifier, ModificationType.Add, 0.5f);
+            targetModifier.AddModifier(AttributeType.attackIntervalModifierPercent, ModificationType.Add, -0.5f);
             targetModifier.AddModifier(AttributeType.damagePercentModifier, ModificationType.Add, 2f);
 
             EventCenter.Publish<SetFlashEvent, float, Color>(duration, new Color(1, 0, 0.8f));
@@ -47,7 +46,7 @@ namespace BuffSystem
         public override void OnRemove()
         {
             targetModifier.AddModifier(AttributeType.moveSpeedModifier, ModificationType.Add, -1f);
-            targetModifier.AddModifier(AttributeType.attackIntervalModifier, ModificationType.Add, -0.5f);
+            targetModifier.AddModifier(AttributeType.attackIntervalModifierPercent, ModificationType.Add, 0.5f);
             targetModifier.AddModifier(AttributeType.damagePercentModifier, ModificationType.Add, -2f);
 
             EventCenter.Publish<SetFlashEvent, float, Color>(duration, Color.black);
@@ -71,13 +70,13 @@ namespace BuffSystem
         {
             if (targetModifier == null) return;
 
-            targetModifier.AddModifier(AttributeType.attackIntervalModifier, ModificationType.Add, -0.5f);
+            targetModifier.AddModifier(AttributeType.attackIntervalModifierPercent, ModificationType.Add, 0.5f);
             targetModifier.AddModifier(AttributeType.damagePercentModifier, ModificationType.Add, -0.5f);
         }
 
         public override void OnRemove()
         {
-            targetModifier.AddModifier(AttributeType.attackIntervalModifier, ModificationType.Add, 0.5f);
+            targetModifier.AddModifier(AttributeType.attackIntervalModifierPercent, ModificationType.Add, -0.5f);
             targetModifier.AddModifier(AttributeType.damagePercentModifier, ModificationType.Add, 0.5f);
 
             EventCenter.Publish<WeakOverEvent>();

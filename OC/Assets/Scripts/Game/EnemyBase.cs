@@ -143,23 +143,38 @@ public class EnemyBase : MonoBehaviour
         rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
     }
 
-    public virtual void TakeDamage(int damage)
+    public virtual void TakeDamage(float physicalDamage, float energyDamage)
     {
         // 如果已死亡，不接受伤害
         if (isDead) return;
 
+        //处理物理伤害
         bool iscritical = Tools.RandomInt(0, 99) > 90; // 10%几率暴击
         if (iscritical) 
         {
-            damage = damage * 2; 
+            physicalDamage = physicalDamage * 2; 
         }
-        currentHp -= damage;
+        currentHp -= Mathf.FloorToInt(physicalDamage);
         
-        // 显示伤害文本
-        var dt = ObjectPoolManager.Instance.GetObject<TextPopUp>("TextPopUp", transform.position);
-        dt.transform.SetParent(canvas.transform);
-        dt.Show(damage.ToString(), 3f, iscritical? Color.red : Color.white, 0.6f ,iscritical);
-         
+        if(physicalDamage > 0)
+        {
+            // 显示伤害文本
+            var dt = ObjectPoolManager.Instance.GetObject<TextPopUp>("TextPopUp", transform.position);
+            dt.transform.SetParent(canvas.transform);
+            dt.Show(physicalDamage.ToString(), 3f, iscritical ? Color.red : Color.white, 0.6f, iscritical);
+        }
+
+        // 处理异能伤害
+        currentHp -= Mathf.FloorToInt(energyDamage);
+        if (energyDamage > 0)
+        {
+            // 显示伤害文本
+            var dt = ObjectPoolManager.Instance.GetObject<TextPopUp>("TextPopUp", transform.position);
+            dt.transform.SetParent(canvas.transform);
+            dt.Show(energyDamage.ToString(), 3f, Color.blue, 0.6f, false);
+        }
+
+
         FlashSprite(); // 受伤时闪烁
         
         if (currentHp <= 0)

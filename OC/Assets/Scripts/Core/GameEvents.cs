@@ -97,6 +97,9 @@ namespace GameEvents
 
     public struct HPChangeEvent : IGameEvent { }
 
+    /// <summary>
+    /// 更新FightUI的角色信息显示
+    /// </summary>
     public struct UpdateInfoDisplayEvent : IGameEvent { }
 
     #endregion

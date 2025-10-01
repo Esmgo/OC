@@ -9,6 +9,9 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using static Mirror.BouncyCastle.Math.EC.ECCurve;
 
+/// <summary>
+/// 管理整个游戏进程
+/// </summary>
 public class GameApplication : MonoBehaviour
 {
     public static GameApplication Instance { get; private set; }
@@ -41,10 +44,11 @@ public class GameApplication : MonoBehaviour
 
     private async void Start()
     {
-        Init();     
+        Init();     //初始化自身
         DOTween.Init().SetCapacity(200, 50);        // DOTween初始化，设置初始容量
-        Tools.Init();
+        Tools.Init();       // 工具类初始化
         UIManager.Instance.Init();      // UI管理器初始化
+        ItemsManager.Instance.Init();   // 物品管理器初始化
         GlobalModificationManager.Instance.Init();      //全局增益管理器初始化
         await UIManager.Instance.OpenPanelAsync<MainPanel>("MainPanel");    // 打开主界面
     }

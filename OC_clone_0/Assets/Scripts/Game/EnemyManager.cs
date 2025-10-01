@@ -144,7 +144,7 @@ public class EnemyManager : MonoBehaviour
             timer = 0f;
         }
 
-        if (waveTimer < 120)
+        if (waveTimer < 5)
         {
             waveTimer += Time.deltaTime;
         }

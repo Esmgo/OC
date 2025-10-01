@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Item Configuration", menuName = "Game/Item Configuration")]
-public class ItemConfiguration : ScriptableObject
+public abstract class ItemConfiguration : ScriptableObject
 {
     [Header("基础信息")]
     [Tooltip("道具名称")]
@@ -23,9 +22,6 @@ public class ItemConfiguration : ScriptableObject
     [Tooltip("道具来源")]
     public ItemSource source = ItemSource.Shop;
 
-    [Tooltip("是否可叠加")]
-    public bool stackable = true;
-
     [Tooltip("最大叠加数量")]
     public int maxStackCount = 1;
 
@@ -33,20 +29,21 @@ public class ItemConfiguration : ScriptableObject
     [Tooltip("商店售价")]
     public int price = 0;
 
-    [Header("属性修改")]
-    [Tooltip("属性修改器列表")]
-    public List<AttributeEffect> attributeEffects = new();
+    [Header("运行时数据")]
+    [Tooltip("当前叠加数量")]
+    public int count = 0; 
 
-    [Header("机制效果")]
-    [Tooltip("机制效果列表")]
-    public List<MechanicEffect> mechanicEffects = new();
+    public virtual void OnGet() { }
 
-    [Header("触发条件")]
-    [Tooltip("触发类型")]
-    public TriggerType triggerType = TriggerType.OnPickup;
+    public virtual void OnDashEnd() { }
 
-    [Tooltip("持续时间（-1表示永久）")]
-    public float duration = -1f;
+    //[Header("属性修改（获得时一次性触发）")]
+    //[Tooltip("属性修改器列表")]
+    //public List<AttributeEffect> attributeEffects = new();
+
+    //[Header("机制效果（全局条件触发）")]
+    //[Tooltip("机制效果列表")]
+    //public List<MechanicEffect> mechanicEffects = new();
 }
 
 /// <summary>
@@ -76,7 +73,6 @@ public enum ItemSource
 /// </summary>
 public enum TriggerType
 {
-    OnPickup,        // 拾取时触发
     OnGet,         // 获得时触发
     OnCooldownEnd,   // 冷却结束时触发
     OnDamageTaken,   // 受到伤害时触发
@@ -91,6 +87,13 @@ public class MechanicEffect
 {
     [Tooltip("机制类型")]
     public MechanicType mechanicType;
+
+    [Header("触发条件")]
+    [Tooltip("触发类型")]
+    public TriggerType triggerType = TriggerType.OnGet;
+
+    [Tooltip("持续时间（-1表示永久）")]
+    public float duration = -1f;
 
     [Tooltip("效果参数")]
     public MechanicParameters parameters;

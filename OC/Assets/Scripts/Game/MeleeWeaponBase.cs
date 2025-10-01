@@ -69,7 +69,7 @@ public class MeleeWeaponBase : Weapon
             var enemy = target.GetComponent<EnemyBase>();
             if (enemy != null)
             {
-                enemy.TakeDamage(GetDamage());
+                enemy.TakeDamage(GetPhysicalDamage());
 
                 // 计算击退方向并应用击退
                 Vector2 knockbackDirection = (enemy.transform.position - transform.position).normalized;

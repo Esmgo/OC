@@ -12,7 +12,7 @@ public class PlayerAttributeModifier
     [Header("生命相关")]
     [Tooltip("最大生命修正(加)")]
     public float maxHealthModifier = 0;
-    [Tooltip("最大生命修正(乘)")]
+    [Tooltip("最大生命修正(百分比)")]
     public float maxHealthModifierPercent = 0;
 
     [Tooltip("生命回复修正")]
@@ -42,15 +42,13 @@ public class PlayerAttributeModifier
     [Tooltip("攻击间隔修正（百分比）")]
     public float attackIntervalModifierPercent = 0;
 
-    [Tooltip("伤害倍率")]
+    [Tooltip("伤害倍率修正")]
     public float damagePercentModifier = 0;
     [Tooltip("物理伤害修正")]
     public float physicalDamageModifier = 0;
     [Tooltip("物理伤害修正(百分比)")]
     public float physicalDamageModifierPercent = 0;
-    [Tooltip("元素伤害修正")]
-    public float elementalDamageModifier = 0;
-    [Tooltip("能量伤害修正")]
+    [Tooltip("异能伤害修正")]
     public float energyDamageModifier = 0;
     [Tooltip("攻击范围修正")]
     public float attackRangeModifier = 0;
@@ -141,11 +139,6 @@ public class PlayerAttributeModifier
         { (AttributeType.physicalDamageModifierPercent, ModificationType.Add), (m, v) => m.physicalDamageModifierPercent += v },
         { (AttributeType.physicalDamageModifierPercent, ModificationType.Multiply), (m, v) => m.physicalDamageModifierPercent *= v },
         { (AttributeType.physicalDamageModifierPercent, ModificationType.Override), (m, v) => m.physicalDamageModifierPercent = v },
-
-        // ElementalDamage
-        { (AttributeType.elementalDamageModifier, ModificationType.Add), (m, v) => m.elementalDamageModifier += v },
-        { (AttributeType.elementalDamageModifier, ModificationType.Multiply), (m, v) => m.elementalDamageModifier *= v },
-        { (AttributeType.elementalDamageModifier, ModificationType.Override), (m, v) => m.elementalDamageModifier = v },
 
         // EnergyDamage
         { (AttributeType.energyDamageModifier, ModificationType.Add), (m, v) => m.energyDamageModifier += v },
@@ -258,7 +251,7 @@ public enum ModificationType
 }
 
 /// <summary>
-/// 属性效果
+/// 属性修改效果
 /// </summary>
 [Serializable]
 public class AttributeEffect

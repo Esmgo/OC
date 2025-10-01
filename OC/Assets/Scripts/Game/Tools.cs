@@ -72,6 +72,19 @@ public static class Tools
         }
     }
 
+    public static PlayerAttributeModifier GetGlobalAttributeModifier()
+    {
+        if (GlobalModificationManager.Instance != null)
+        {
+            return GlobalModificationManager.Instance.globalPlayerAttributeModifier;
+        }
+        else
+        {
+            Debug.LogWarning("未找到全局属性管理器！！");
+            return null;
+        }
+    }
+
 
     #region AA加载
     // 全局句柄缓存字典（防止重复加载/泄漏）

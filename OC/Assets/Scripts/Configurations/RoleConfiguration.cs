@@ -54,15 +54,6 @@ public class RoleConfiguration : ScriptableObject
     [Tooltip("攻击间隔")]
     public float attackInterval = 0.3f;
 
-    [Tooltip("伤害（倍率）")]
-    public float damagePercent = 0f;
-
-    [Tooltip("物理伤害")]
-    public float physicalDamage = 0f;
-
-    [Tooltip("异能伤害")]
-    public float energyDamage = 0f;
-
     [Header("能力")]
     [Tooltip("护甲值")]
     public int shield = 0;

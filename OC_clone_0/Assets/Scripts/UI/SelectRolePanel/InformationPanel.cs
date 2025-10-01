@@ -26,14 +26,12 @@ public class InformationPanel : MonoBehaviour
         ShowInfo("生命", config.maxHealth, 0, config.themeColor, roleInformationContent, roleInfoBars);
         ShowInfo("能量", config.maxEnergy, 1, config.themeColor, roleInformationContent, roleInfoBars);
         ShowInfo("能量回复", config.energyRegenRate, 2, config.themeColor, roleInformationContent, roleInfoBars, false, 20);
-        ShowInfo("物理伤害", config.physicalDamage, 3, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
-        ShowInfo("异能伤害", config.energyDamage, 4, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
-        ShowInfo("移动速度", config.moveSpeed, 5, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
-        ShowInfo("精神值", config.sanity, 6, config.themeColor, roleInformationContent, roleInfoBars);
-        ShowInfo("冲刺速度", config.dashSpeed, 7, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
-        ShowInfo("冲刺冷却", config.dashCooldown, 8, config.themeColor, roleInformationContent, roleInfoBars, false, 5);
-        ShowInfo("生命回复", config.healthRegenRate, 9, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
-        ShowInfo("护甲", config.shield, 10, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
+        ShowInfo("移动速度", config.moveSpeed, 3, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
+        ShowInfo("精神值", config.sanity, 4, config.themeColor, roleInformationContent, roleInfoBars);
+        ShowInfo("冲刺速度", config.dashSpeed, 5, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
+        ShowInfo("冲刺冷却", config.dashCooldown, 6, config.themeColor, roleInformationContent, roleInfoBars, false, 5);
+        ShowInfo("生命回复", config.healthRegenRate, 7, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
+        ShowInfo("护甲", config.shield, 8, config.themeColor, roleInformationContent, roleInfoBars, false, 30);
     }
 
     public void ShowWeaponInfo(WeaponConfiguration weaponConfig)

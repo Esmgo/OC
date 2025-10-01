@@ -47,8 +47,9 @@ public class ShopUI : UIPanel
 
         Debug.Log("itemCreated.Count: " + itemCreated.Count);
 
-        RegisterButton("Continue", () => {
+        RegisterButton("Continue",async () => {
             EnemyManager.Instance.StartWave();
+            await UIManager.Instance.OpenPanelAsync<FightUI>("FightUI");
             UIManager.Instance.ClosePanel("ShopUI");
         });
     }
@@ -78,7 +79,7 @@ public class ShopUI : UIPanel
     {
         if (itemsForSaleConfigs.Count == 0)
         {
-            Debug.LogWarning("没有找到带'Item'标签的物品，创建默认商店项目");
+            Debug.LogWarning("没有找到带'Item'标签的物品!!!!!!");
         }
         else
         {

@@ -37,7 +37,7 @@ public class RangedWeaponBase : Weapon
         BulletBase bullet = ObjectPoolManager.Instance.GetObject<BulletBase>(bulletAddress, firePoint.position, firePoint.rotation);
         if (bullet != null)
         {
-            bullet.Initialize(direction, GetDamage(), bulletSpeed, targetLayer, knockBackForce);
+            bullet.Initialize(direction, GetPhysicalDamage(), bulletSpeed, targetLayer, knockBackForce);
         }
 
         EventCenter.Publish<EnergyChangeEvent, int>(-energyCostPerAttack);

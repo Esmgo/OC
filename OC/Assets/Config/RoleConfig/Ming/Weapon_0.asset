@@ -14,19 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Ming_weapon_0
   attackInterval: 0.1
-  attackRange: 5
   targetLayer:
     serializedVersion: 2
     m_Bits: 128
   knockBackForce: 1
-  weakenedAttackInterval: 0.5
   damagePercent: 1
-  weakenedDamagePercent: 0.8
   energyCostPerAttack: 1
+  attackRange: 5
   meleeAttackAngle: 45
   meleeFixAngle: 0
   bulletAddress: Bullet_normal_0
   bulletSpeed: 40
-  physicalDamageRatio: 0.5
-  elementalDamageRatio: 0
-  energyDamageRatio: 0.5
+  physicalDamage: 10
+  energyDamage: 5

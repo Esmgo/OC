@@ -43570,7 +43570,7 @@ GameObject:
   - component: {fileID: 931771679}
   - component: {fileID: 931771678}
   m_Layer: 0
-  m_Name: PlayerItemsManager
+  m_Name: ItemsManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43588,7 +43588,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71575d07e297e1344b4ea3ac475b5b25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coins: 0
 --- !u!4 &931771679
 Transform:
   m_ObjectHideFlags: 0

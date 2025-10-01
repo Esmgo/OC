@@ -26,9 +26,8 @@ MonoBehaviour:
   dashSpeed: 20
   dashCooldown: 0.5
   attackInterval: 0.3
-  damagePercent: 0
+  damagePercent: 1
   physicalDamage: 20
-  elementalDamage: 20
   energyDamage: 20
   shield: 0
   sanity: 100

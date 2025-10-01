@@ -12,17 +12,20 @@ public class Character : MonoBehaviour
 {
     public Canvas canvas;
 
-    private Weapon weapon = new();
+    private Weapon weapon;
     private SpriteRenderer[] spriteRenderers;
     private MoveBase moveComponent;
+    [Tooltip("全局角色属性修饰器")]
     private PlayerAttributeModifier gam;
+    [Tooltip("角色的buff管理器")]
     private BuffManager buffManager;
 
     private RoleConfiguration roleConfig;
     private WeaponConfiguration weaponConfig;
     private Weapon currentWeapon;
 
-    public PlayerAttributeModifier modifier; // 角色属性修饰器
+    [Tooltip("角色自身属性修饰器")]
+    public PlayerAttributeModifier modifier;
     
 
     public int maxHealth; // 角色最大生命值
@@ -34,10 +37,6 @@ public class Character : MonoBehaviour
     public float moveSpeed;    // 角色移动速度
     public float dashSpeed;     // 角色冲刺速度
     public float dashCooldown;     // 角色冲刺冷却时间
-    public float damagePercent;     // 角色伤害倍率
-    public float physicalDamage;    // 角色物理伤害
-    public float elementalDamage;   // 角色元素伤害
-    public float energyDamage;      // 角色能量伤害
     public float sanity;        // 角色理智值
     public int shield;      // 角色护盾值
     public string roleName;     // 角色名称
@@ -49,12 +48,18 @@ public class Character : MonoBehaviour
     private float invincibleTime = 0.5f; // 无敌时间
     private float invincibleTimer = 0f; // 无敌计时器
     private bool isInvincible = false; // 是否处于无敌状态
-    private bool isEnergyDepleted = false; // 能量是否耗尽
     private float energyRegenValue = 0f; // 能量恢复值累积
+    private float damagePercent = 1f; // 伤害加成百分比
+
+    private void Awake()
+    {
+        // 在Awake中获取已存在的Weapon组件
+        weapon = GetComponentInChildren<Weapon>();
+        canvas = GetComponentInChildren<Canvas>(true);
+    }
 
     private void OnDestroy()
     {
-        EventCenter.Unsubscribe<WeakOverEvent>(OnWeakOver);
         EventCenter.Unsubscribe<EnergyChangeEvent, int>(Energy);
         EventCenter.Unsubscribe<WaveStartEvent>(OnWaveStart);
         EventCenter.Unsubscribe<SetFlashEvent, float, Color>(SetFlash);
@@ -64,7 +69,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
-        if (!isEnergyDepleted)
+        if (!buffManager.HasBuff(BuffType.EnergyWeak))
         {
             energyRegenValue += energyRegenRate * Time.deltaTime;
             if (energyRegenValue >= 1f)
@@ -88,8 +93,7 @@ public class Character : MonoBehaviour
 
     public void Init(RoleConfiguration config, WeaponConfiguration weaponConfig)
     {
-        canvas = GetComponentInChildren<Canvas>(true);
-        weapon = GetComponentInChildren<Weapon>();
+        
         this.roleConfig = config;
         this.weaponConfig = weaponConfig;
 
@@ -102,9 +106,6 @@ public class Character : MonoBehaviour
         moveSpeed = config.moveSpeed;
         dashSpeed = config.dashSpeed;
         dashCooldown = config.dashCooldown;
-        damagePercent = config.damagePercent;
-        physicalDamage = config.physicalDamage;
-        energyDamage = config.energyDamage;
         sanity = config.sanity;
         shield = config.shield; 
         roleName = config.roleName;
@@ -120,50 +121,35 @@ public class Character : MonoBehaviour
         // 初始化武器
         weapon.Init(this, weaponConfig);
         currentWeapon = weapon;
-        //foreach (var weapon in weapons)
-        //{
-        //    if (weapon != null && weapon.gameObject.name == weaponConfig.weaponName)
-        //    {
-        //        weapon.gameObject.SetActive(true);
-        //        weapon.Init(this, weaponConfig);
-        //        currentWeapon = weapon;
-        //    }
-        //    else
-        //    {
-        //        weapon?.gameObject.SetActive(false);
-        //    }
-        //}
 
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
         gam = GlobalModificationManager.Instance.globalPlayerAttributeModifier;
         buffManager = GetComponent<BuffManager>();
 
-        EventCenter.Subscribe<WeakOverEvent>(OnWeakOver);
         EventCenter.Subscribe<EnergyChangeEvent, int>(Energy);
         EventCenter.Subscribe<WaveStartEvent>(OnWaveStart);
         EventCenter.Subscribe<SetFlashEvent, float, Color>(SetFlash);
         EventCenter.Subscribe<PlayerAttributeModifierChangedEvent>(UpdateData);
         EventCenter.Subscribe<HPChangeEvent, int>(Health);
 
-        //GetComponent<BuffManager>().AddBuff<BerserkBuff>();
     }
 
     private void UpdateData() 
     {
         maxHealth = (int)((roleConfig.maxHealth + modifier.maxHealthModifier + gam.maxHealthModifier)
-                    * (1 + modifier.maxHealthModifier + gam.maxHealthModifier));
+                    * (1 + modifier.maxHealthModifierPercent + gam.maxHealthModifierPercent));
         currentHealth = maxHealth;
-        maxEnergy = (int)((roleConfig.maxEnergy + modifier.maxEnergyModifier + gam.maxEnergyModifier)
-                    * (1 + modifier.maxEnergyModifierPercent + gam.maxEnergyModifierPercent));
-        currentEnergy = Math.Clamp(currentEnergy, 0, maxEnergy);
+        //maxEnergy = (int)((roleConfig.maxEnergy + modifier.maxEnergyModifier + gam.maxEnergyModifier)
+        //            * (1 + modifier.maxEnergyModifierPercent + gam.maxEnergyModifierPercent));
+        //currentEnergy = Math.Clamp(currentEnergy, 0, maxEnergy);
         
         moveSpeed = (roleConfig.moveSpeed + modifier.moveSpeedModifier + gam.moveSpeedModifier)
                     * (1 + modifier.moveSpeedModifierPercent + gam.moveSpeedModifierPercent);
 
         atttackInterval = (weaponConfig.attackInterval + modifier.attackIntervalModifier + gam.attackIntervalModifier)
-                    / (1 + modifier.attackIntervalModifierPercent + gam.attackIntervalModifierPercent);
+                    * (1 + modifier.attackIntervalModifierPercent + gam.attackIntervalModifierPercent);
 
-        damagePercent = 1 + roleConfig.damagePercent + modifier.damagePercentModifier + gam.damagePercentModifier;
+        //damagePercent = 1 + modifier.damagePercentModifier + gam.damagePercentModifier;
 
         if (moveComponent != null)
         {
@@ -173,6 +159,7 @@ public class Character : MonoBehaviour
         {
             currentWeapon.UpdateData(atttackInterval, damagePercent);
         }
+        EventCenter.Publish<UpdateInfoDisplayEvent, Character>(this);
     }
 
     private void OnWaveStart()
@@ -186,7 +173,7 @@ public class Character : MonoBehaviour
         if (_e < 0)
         {
             currentEnergy = 0;
-            if (!isEnergyDepleted)
+            if (!buffManager.HasBuff(BuffType.EnergyWeak))
             {
                 buffManager.AddBuff<EnergyWeak>();
                 var t = ObjectPoolManager.Instance.GetObject<TextPopUp>("TextPopUp", transform.position, Quaternion.identity);
@@ -197,7 +184,6 @@ public class Character : MonoBehaviour
             {
                 buffManager.AddBuff<EnergyWeak>();
             }
-                isEnergyDepleted = true;
         }
         else
         {
@@ -230,11 +216,6 @@ public class Character : MonoBehaviour
         EventCenter.Publish<UpdateInfoDisplayEvent, Character>(this);
     }
 
-    private void OnWeakOver()
-    {
-        isEnergyDepleted = false;
-    }
-
     private void SetFlash(float speed, Color color)
     {
         foreach (var sr in spriteRenderers)
@@ -244,24 +225,4 @@ public class Character : MonoBehaviour
             mat.SetColor("_Color", color);
         }
     }
-
-    /// <summary>
-    /// 获取子物体中所有带指定组件的GameObject
-    /// </summary>
-    /// <typeparam name="T">组件类型</typeparam>
-    /// <param name="includeInactive">是否包含未激活的物体</param>
-    /// <returns>所有找到的GameObject</returns>
-    public List<T> GetAllChildGameObjectsWithComponent<T>(bool includeInactive = false) where T : Component
-    {
-        T[] _components = GetComponentsInChildren<T>(includeInactive);
-        List<T> components = new();
-
-        for (int i = 0; i < _components.Length; i++)
-        {
-            components.Add(_components[i]);
-        }
-
-        return components;
-    }
-
 }

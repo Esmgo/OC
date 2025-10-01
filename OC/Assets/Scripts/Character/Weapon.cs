@@ -19,7 +19,7 @@ public class Weapon : MonoBehaviour
     [Tooltip("击退力度")]
     [SerializeField] protected float knockBackForce = 5.0f;
 
-    [Tooltip("伤害(倍率)")]
+    [Tooltip("伤害倍率")]
     [SerializeField] protected float damagePercent = 1;
 
     [Tooltip("每次攻击消耗能量")]
@@ -83,8 +83,13 @@ public class Weapon : MonoBehaviour
         this.damagePercent = damagePercent;
     }
 
-    protected int GetDamage()
+    protected float GetPhysicalDamage()
     {
-        return (int)(damage * damagePercent);
+        return physicalDamage;
+    }
+
+    protected float GetEnergyDamage()
+    {
+        return energyDamage;
     }
 }
