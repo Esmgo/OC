@@ -99,7 +99,7 @@ public class BulletBase : MonoBehaviour, IPoolable
             var enemy = other.GetComponent<EnemyBase>();
             if (enemy != null)
             {
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage, 0);
 
                 Vector2 knockbackDirection = (enemy.transform.position - transform.position).normalized;
                 enemy.ApplyKnockback(knockbackDirection, knockBackForce);

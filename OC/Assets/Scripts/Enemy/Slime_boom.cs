@@ -86,7 +86,7 @@ public class Slime_boom : EnemyBase
             if (enemy != null && enemy != this && !enemy.IsDead())
             {
                 // 对其他敌人造成伤害
-                enemy.TakeDamage(explosionDamage / 2); // 对敌人造成一半伤害
+                enemy.TakeDamage(explosionDamage / 2, 0); // 对敌人造成一半伤害
 
                 // 计算击退方向并应用击退
                 Vector2 knockbackDirection = Tools.GetDir(transform, target.transform);
