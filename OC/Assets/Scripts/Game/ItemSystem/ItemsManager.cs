@@ -8,6 +8,8 @@ using UnityEngine;
 /// </summary>
 public class ItemsManager : MonoBehaviour
 {
+    [SerializeField] private int coins = 0; // 金币数量
+
     public static ItemsManager Instance { get; private set; }
 
     private void Awake()
@@ -57,7 +59,15 @@ public class ItemsManager : MonoBehaviour
         }
     }
 
-    //[SerializeField] private int coins = 0; // 金币数量
+    public void Coin(int value)
+    {
+        coins = Math.Clamp(coins + value, 0, int.MaxValue);
+    }
+
+    public int GetCoins()
+    {
+        return coins;
+    }
 
     //// 道具管理
     //private Dictionary<ItemConfiguration, int> items = new(); // 道具及其数量

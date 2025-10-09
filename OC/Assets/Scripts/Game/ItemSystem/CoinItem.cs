@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Item : MonoBehaviour,IPoolable
+public class CoinItem : MonoBehaviour,IPoolable
 {
     protected bool isAttracted = false; // 是否被吸引
     protected Transform target; // 吸引目标
@@ -41,7 +41,7 @@ public class Item : MonoBehaviour,IPoolable
 
     protected virtual void OnCollected()
     {
-        EventCenter.Publish<GetCoinEvent, int>(1); // 发布获取金币事件
+        ItemsManager.Instance.Coin(1);
         ObjectPoolManager.Instance.ReturnObject("Coin", gameObject); // 将金币返回对象池
     }
 

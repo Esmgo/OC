@@ -11,8 +11,9 @@ public class BulletBase : MonoBehaviour, IPoolable
     [SerializeField] protected float lifetime = 10f;
     
     [Tooltip("子弹伤害")]
-    [SerializeField] protected int damage = 0;
-    
+    [SerializeField] protected int physicalDamage = 0;
+    [SerializeField] protected int energyDamage = 0;
+
     [Tooltip("目标层级")]
     [SerializeField] protected LayerMask targetLayers = -1;
 
@@ -48,10 +49,11 @@ public class BulletBase : MonoBehaviour, IPoolable
     /// </summary>
     /// <param name="dir">方向</param>
     /// <param name="bulletDamage">伤害</param>
-    public virtual void Initialize(Vector2 direction, int damage, float speed, LayerMask targetLayers, float knockBackForce)
+    public virtual void Initialize(Vector2 direction, int physicalDamage, int energyDamage, float speed, LayerMask targetLayers, float knockBackForce)
     {
         this.direction = direction.normalized;
-        this.damage = damage;
+        this.physicalDamage = physicalDamage;
+        this.energyDamage = energyDamage;
         this.speed = speed;
         this.targetLayers = targetLayers;
         this.knockBackForce = knockBackForce;
@@ -62,6 +64,9 @@ public class BulletBase : MonoBehaviour, IPoolable
         BulletMoveBase();
     }
 
+    /// <summary>
+    /// 基础的子弹移动逻辑，可以在子类中重写以实现不同的移动行为
+    /// </summary>
     protected virtual void BulletMoveBase()
     {
         if (rb != null)
@@ -74,6 +79,9 @@ public class BulletBase : MonoBehaviour, IPoolable
         }
     }
 
+    /// <summary>
+    /// 重置状态
+    /// </summary>
     public void ResetState()
     {
         rb.velocity = Vector3.zero;
@@ -99,7 +107,7 @@ public class BulletBase : MonoBehaviour, IPoolable
             var enemy = other.GetComponent<EnemyBase>();
             if (enemy != null)
             {
-                enemy.TakeDamage(damage, 0);
+                enemy.TakeDamage(physicalDamage, energyDamage);
 
                 Vector2 knockbackDirection = (enemy.transform.position - transform.position).normalized;
                 enemy.ApplyKnockback(knockbackDirection, knockBackForce);

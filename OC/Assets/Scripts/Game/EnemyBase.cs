@@ -212,7 +212,7 @@ public class EnemyBase : MonoBehaviour
     protected  virtual IEnumerator HandleDeath()
     {
         // 生成死亡效果
-        ObjectPoolManager.Instance.GetObject<Item>("Coin", transform.position); // 掉落金币
+        ObjectPoolManager.Instance.GetObject<CoinItem>("Coin", transform.position); // 掉落金币
         
         //设置个延迟加个死亡动画
 

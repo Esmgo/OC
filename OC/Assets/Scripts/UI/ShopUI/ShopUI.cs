@@ -52,7 +52,29 @@ public class ShopUI : UIPanel
             await UIManager.Instance.OpenPanelAsync<FightUI>("FightUI");
             UIManager.Instance.ClosePanel("ShopUI");
         });
+
+        RegisterButton("Refresh", () => {
+            RefreshItems();
+        });
     }
+
+    private void RefreshItems()
+    {
+        if (!isItemCreated)
+        {
+            CreateShopItems(3);
+            isItemCreated = true;
+        }
+        else
+        {
+            foreach (var item in itemCreated)
+            {
+                item.SetActive(true);
+                item.GetComponent<ItemForSale>().Init(itemsForSaleConfigs[Tools.RandomInt(0, itemsForSaleConfigs.Count)]);
+            }
+        }
+    }
+
 
 
     /// <summary>

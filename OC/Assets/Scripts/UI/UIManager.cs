@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
         if (activePanels.ContainsKey(panelName))
         {
             activePanels[panelName].gameObject.SetActive(true);
+            activePanels[panelName].OnOpen();
             return activePanels[panelName] as T;
         }
 

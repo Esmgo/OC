@@ -77,19 +77,21 @@ public class Weapon : MonoBehaviour
         energyDamage = weaponConfig.energyDamage;
     }
 
-    public void UpdateData(float attackInterval, float damagePercent)
+    public void UpdateData(float attackInterval, float damagePercent, float physicalDamage, float energyDamage)
     {
         this.attackInterval = attackInterval;
         this.damagePercent = damagePercent;
+        this.physicalDamage = physicalDamage;
+        this.energyDamage = energyDamage;
     }
 
     protected float GetPhysicalDamage()
     {
-        return physicalDamage;
+        return physicalDamage * damagePercent;
     }
 
     protected float GetEnergyDamage()
     {
-        return energyDamage;
+        return energyDamage * damagePercent;
     }
 }

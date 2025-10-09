@@ -27,21 +27,12 @@ namespace GameEvents
     /// </summary>
     public struct GameOverEvent : IGameEvent { }
 
-    /// <summary>
-    /// 返回主菜单事件
-    /// </summary>
-    public struct ReturnToMainMenuEvent : IGameEvent { }
 
     #endregion
 
     #region 角色事件
 
     public struct PlayerAttributeModifierChangedEvent : IGameEvent { }
-
-    /// <summary>
-    /// 角色生成事件
-    /// </summary>
-    public struct PlayerSpawnedEvent : IGameEvent { }
 
     /// <summary>
     /// 角色死亡事件
@@ -60,18 +51,6 @@ namespace GameEvents
     /// </summary>
     public struct PlayerHealedEvent : IGameEvent { }
 
-    /// <summary>
-    /// 角色升级事件
-    /// 参数: 新等级, 获得经验值
-    /// </summary>
-    public struct PlayerLevelUpEvent : IGameEvent { }
-
-    /// <summary>
-    /// 角色配置改变事件
-    /// 参数: 新的角色配置
-    /// </summary>
-    public struct PlayerConfigChangedEvent : IGameEvent { }
-
     #endregion
 
     #region 战斗事件
@@ -88,6 +67,11 @@ namespace GameEvents
     public struct AttackEvent : IGameEvent { }
 
     public struct WaveStartEvent : IGameEvent { }
+
+    /// <summary>
+    /// 波次完成事件
+    /// </summary>
+    public struct WaveCompletedEvent : IGameEvent { }
 
     public struct EnergyChangeEvent : IGameEvent { }
 
@@ -150,11 +134,6 @@ namespace GameEvents
 
     #region 分数和经验事件
 
-    /// <summary>
-    /// 击杀数改变事件
-    /// 参数: 新击杀数, 增加的击杀数
-    /// </summary>
-    public struct KillCountChangedEvent : IGameEvent { }
 
     #endregion
 

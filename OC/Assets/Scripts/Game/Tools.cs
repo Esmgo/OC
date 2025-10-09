@@ -7,25 +7,39 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public static class Tools 
 {
+    private static Character character;
     /// <summary>
     /// 工具类初始化
     /// </summary>
     public static void Init()
     {
         Random.InitState(GenerateRandomSeed());
+        character = null;
     }
 
+    /// <summary>
+    /// 获得[min, max)范围内的随机整数
+    /// </summary>
+    /// <param name="min">最小</param>
+    /// <param name="max">最大</param>
+    /// <returns></returns>
     public static int RandomInt(int min, int max)
     {
         return Random.Range(min, max);
     }
 
+    /// <summary>
+    /// 获得[min, max)范围内的随机浮点数
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
     public static float RandomFloat(float min, float max)
     {
         return Random.Range(min, max);
     }
 
-    // 生成随机种子（时间戳 + 哈希增强随机性）
+    // 生成随机数种子（时间戳 + 哈希增强随机性）
     private static int GenerateRandomSeed()
     {
         int seed = System.DateTime.Now.Millisecond;
@@ -33,43 +47,69 @@ public static class Tools
         return seed;
     }
 
+    /// <summary>
+    /// 获取鼠标相对于某个中心点的角度（0-360度，右侧为0度，逆时针增加）
+    /// </summary>
+    /// <param name="center"></param>
+    /// <returns></returns>
     public static float GetMouseAngle(Transform center)
     {
         return (Vector2.SignedAngle(Vector2.right, Camera.main.ScreenToWorldPoint(Input.mousePosition) - center.position) + 360) % 360;
     }
 
+    /// <summary>
+    /// 获得鼠标相对于某个中心点的方向（单位向量）
+    /// </summary>
+    /// <param name="center"></param>
+    /// <returns></returns>
     public static Vector2 GetMouseDir(Transform center)
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         return new Vector2(mousePos.x - center.position.x, mousePos.y - center.position.y).normalized;
     }
 
+    /// <summary>
+    /// 获得两个Transform之间的角度（0-360度，右侧为0度，逆时针增加）
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <returns></returns>
     public static float GetAngle(Transform from, Transform to)
     {
         return (Vector2.SignedAngle(Vector2.right, to.position - from.position) + 360) % 360;
     }
 
+    /// <summary>
+    /// 获得两个Transform之间的方向（单位向量）
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <returns></returns>
     public static Vector2 GetDir(Transform from, Transform to)
     {
         return (to.position - from.position).normalized;
     }
 
+    /// <summary>
+    /// 获得玩家角色
+    /// </summary>
+    /// <returns></returns>
     public static Character GetCharacter()
     {
-        Character c = null;
-        if (EnemyManager.Instance.role != null)
+        if (character != null)
         {
-            c = EnemyManager.Instance.role.GetComponent<Character>();
-        }
-        if (c != null)
-        {
-            return c;
+            return character;
         }
         else
         {
             Debug.LogWarning("未找到玩家角色！！");
             return null;
         }
+    }
+
+    public static void SetCharacter(Character c)
+    {
+        character = c;
     }
 
     public static PlayerAttributeModifier GetGlobalAttributeModifier()

@@ -42,6 +42,8 @@ public class Character : MonoBehaviour
     public string roleName;     // 角色名称
     public string description;    // 角色描述
 
+    public float physicalDamage; // 物理伤害
+    public float energyDamage; // 异能伤害
     public float atttackInterval; // 角色攻击间隔
 
 
@@ -138,7 +140,7 @@ public class Character : MonoBehaviour
     {
         maxHealth = (int)((roleConfig.maxHealth + modifier.maxHealthModifier + gam.maxHealthModifier)
                     * (1 + modifier.maxHealthModifierPercent + gam.maxHealthModifierPercent));
-        currentHealth = maxHealth;
+        //currentHealth = maxHealth;
         //maxEnergy = (int)((roleConfig.maxEnergy + modifier.maxEnergyModifier + gam.maxEnergyModifier)
         //            * (1 + modifier.maxEnergyModifierPercent + gam.maxEnergyModifierPercent));
         //currentEnergy = Math.Clamp(currentEnergy, 0, maxEnergy);
@@ -149,7 +151,13 @@ public class Character : MonoBehaviour
         atttackInterval = (weaponConfig.attackInterval + modifier.attackIntervalModifier + gam.attackIntervalModifier)
                     * (1 + modifier.attackIntervalModifierPercent + gam.attackIntervalModifierPercent);
 
-        //damagePercent = 1 + modifier.damagePercentModifier + gam.damagePercentModifier;
+        damagePercent = 1 + modifier.damagePercentModifier + gam.damagePercentModifier;
+
+        physicalDamage = (weaponConfig.physicalDamage + modifier.physicalDamageModifier + gam.physicalDamageModifier)
+                    * (1 + modifier.physicalDamageModifierPercent + gam.physicalDamageModifierPercent);
+
+        energyDamage = (weaponConfig.energyDamage + modifier.energyDamageModifier + gam.energyDamageModifier)
+                    * (1 + modifier.energyDamageModifierPercent + gam.energyDamageModifierPercent);
 
         if (moveComponent != null)
         {
@@ -157,7 +165,7 @@ public class Character : MonoBehaviour
         }
         if (currentWeapon != null)
         {
-            currentWeapon.UpdateData(atttackInterval, damagePercent);
+            currentWeapon.UpdateData(atttackInterval, damagePercent, physicalDamage, energyDamage);
         }
         EventCenter.Publish<UpdateInfoDisplayEvent, Character>(this);
     }

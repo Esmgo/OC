@@ -50,6 +50,8 @@ public class PlayerAttributeModifier
     public float physicalDamageModifierPercent = 0;
     [Tooltip("异能伤害修正")]
     public float energyDamageModifier = 0;
+    [Tooltip("异能伤害修正(百分比)")]
+    public float energyDamageModifierPercent = 0;
     [Tooltip("攻击范围修正")]
     public float attackRangeModifier = 0;
     [Tooltip("击退力修正")]
@@ -145,6 +147,10 @@ public class PlayerAttributeModifier
         { (AttributeType.energyDamageModifier, ModificationType.Multiply), (m, v) => m.energyDamageModifier *= v },
         { (AttributeType.energyDamageModifier, ModificationType.Override), (m, v) => m.energyDamageModifier = v },
 
+        { (AttributeType.energyDamageModifierPercent, ModificationType.Add), (m, v) => m.energyDamageModifierPercent += v },
+        { (AttributeType.energyDamageModifierPercent, ModificationType.Multiply), (m, v) => m.energyDamageModifierPercent *= v },
+        { (AttributeType.energyDamageModifierPercent, ModificationType.Override), (m, v) => m.energyDamageModifierPercent = v },
+
         // AttackRange
         { (AttributeType.attackRangeModifier, ModificationType.Add), (m, v) => m.attackRangeModifier += v },
         { (AttributeType.attackRangeModifier, ModificationType.Multiply), (m, v) => m.attackRangeModifier *= v },
@@ -224,10 +230,10 @@ public enum AttributeType
     physicalDamageModifier,
     [Tooltip("物理伤害修正(百分比)")]
     physicalDamageModifierPercent,
-    [Tooltip("元素伤害修正")]
-    elementalDamageModifier,
-    [Tooltip("能量伤害修正")]
+    [Tooltip("异能伤害修正")]
     energyDamageModifier,
+    [Tooltip("异能伤害修正(百分比)")]
+    energyDamageModifierPercent,
     [Tooltip("攻击范围修正")]
     attackRangeModifier,
     [Tooltip("击退力修正")]

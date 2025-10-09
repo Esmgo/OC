@@ -10,15 +10,14 @@ public class EnemyManager : MonoBehaviour
 
     [Header("生成参数")]
     public int maxEnemyCount = 50; // 敌人最大数量
-    public float spawnInterval = 2f; // 生成间隔（秒）
     public float minSpawnRadius = 5f; // 最小生成半径（玩家为中心）
     public float maxSpawnRadius = 12f; // 最大生成半径（玩家为中心）
-    public float spawnDelay = 2f; // 开始生成延迟（秒）
-    public Transform role; // 玩家对象
+
+    public Transform character => Tools.GetCharacter().transform; // 玩家对象
 
     private MapConfiguration currentMapConfig; // 当前地图配置
 
-    private List<GameObject> enemyPrefabs = new(); // 敌人预制体数组，支持多种类型
+    private List<GameObject> enemyPrefabs = new(); // 敌人预制体数组
 
 
     [Header("对象池配置")]
@@ -30,10 +29,13 @@ public class EnemyManager : MonoBehaviour
     private bool delayFinished = false;
 
     [Header("生成控制")]
+    [SerializeField]private float spawnDelay = 2f; // 开始生成延迟（秒）
+    [SerializeField]private float spawnInterval = 2f; // 生成间隔（秒）
     public float waveTimer = 0f; // 用于波次生成的计时器
     private int currentWaveIndex = 0; // 当前波次索引
     public bool spawnEnabled = true; // 敌人生成开关
     private bool waveEnded = false; // 添加波次结束标志
+    [SerializeField]private int waveTime = 10;//每波持续时间，单位秒
 
     void Awake()
     {
@@ -48,13 +50,13 @@ public class EnemyManager : MonoBehaviour
             return;
         }
 
-        // 可选：自动查找玩家
-        if (role == null)
-        {
-            var moveObj = FindObjectOfType<MoveBase>();
-            if (moveObj != null)
-                role = moveObj.transform;
-        }
+        //// 可选：自动查找玩家
+        //if (character == null)
+        //{
+        //    var moveObj = FindObjectOfType<MoveBase>();
+        //    if (moveObj != null)
+        //        character = moveObj.transform;
+        //}
     }
 
     private void OnEnable()
@@ -123,7 +125,7 @@ public class EnemyManager : MonoBehaviour
 
     void Update()
     {
-        if (!spawnEnabled || role == null) return;
+        if (!spawnEnabled || character == null) return;
 
         // 延迟处理
         if (!delayFinished)
@@ -144,7 +146,7 @@ public class EnemyManager : MonoBehaviour
             timer = 0f;
         }
 
-        if (waveTimer < 30)
+        if (waveTimer < waveTime)
         {
             waveTimer += Time.deltaTime;
         }
@@ -168,21 +170,24 @@ public class EnemyManager : MonoBehaviour
 
         ResetWaveState();
 
-        UIManager.Instance.ClosePanel("FightUI");
-        
-        //异步打开商店UI
-        var shopTask = UIManager.Instance.OpenPanelAsync<ShopUI>("ShopUI");
-        yield return new WaitUntil(() => shopTask.IsCompleted);
-        
-        if (shopTask.Exception != null)
-        {
-            Debug.LogError($"打开商店失败: {shopTask.Exception}");
-        }
-        else
-        {
-            shopTask.Result?.OnOpen();
-            Debug.Log("商店已打开");
-        }
+        EventCenter.Publish<WaveCompletedEvent>();
+
+        yield return null;
+        //UIManager.Instance.ClosePanel("FightUI");
+
+        ////异步打开商店UI
+        //var shopTask = UIManager.Instance.OpenPanelAsync<ShopUI>("ShopUI");
+        //yield return new WaitUntil(() => shopTask.IsCompleted);
+
+        //if (shopTask.Exception != null)
+        //{
+        //    Debug.LogError($"打开商店失败: {shopTask.Exception}");
+        //}
+        //else
+        //{
+        //    shopTask.Result?.OnOpen();
+        //    Debug.Log("商店已打开");
+        //}
     }
 
     private void SpawnEnemy()
@@ -214,12 +219,12 @@ public class EnemyManager : MonoBehaviour
     /// <returns></returns>
     private Vector2 GetRandomPositionAroundPlayer()
     {
-        if (role == null) return Vector2.zero;
+        if (character == null) return Vector2.zero;
         
         float angle = Random.Range(0f, Mathf.PI * 2f);
         float radius = Random.Range(minSpawnRadius, maxSpawnRadius);
         Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
-        return (Vector2)role.position + offset;
+        return (Vector2)character.position + offset;
     }
 
     /// <summary>

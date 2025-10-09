@@ -200,7 +200,7 @@ public class PoolPreloader : MonoBehaviour
             return 15; // 文本弹出池中等
         else if (prefab.GetComponent<ParticleRecycler>() != null)
             return 10; // 特效池中等
-        else if (prefab.GetComponent<Item>() != null)
+        else if (prefab.GetComponent<CoinItem>() != null)
             return 25; // 物品池较大
         else if (prefab.GetComponent<EnemyBase>() != null)
             return 30; // 敌人池较大

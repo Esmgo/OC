@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 角色的移动脚本
+/// </summary>
 public class MoveBase : MonoBehaviour
 {
     [Header("移动参数")]

@@ -3,7 +3,7 @@ using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 /// <summary>
-/// Buff 类型枚举
+/// Buff 类型枚举,所有的buff类型都在这里定义
 /// </summary>
 public enum BuffType
 {

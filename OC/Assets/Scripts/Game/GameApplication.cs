@@ -63,6 +63,7 @@ public class GameApplication : MonoBehaviour
 
     private void Update()
     {
+        // 按下Esc键暂停或继续游戏(退出有bug,先别用)
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isGameActive)
@@ -75,7 +76,7 @@ public class GameApplication : MonoBehaviour
         }
     }
     /// <summary>
-    /// 由选角色界面转到开始游戏，加载角色和武器配置，
+    /// 开始游戏，打开游戏界面，加载角色和武器配置，
     /// </summary>
     /// <param name="roleConfig">角色配置</param>
     /// <param name="weaponConfig">武器配置</param>
@@ -97,12 +98,12 @@ public class GameApplication : MonoBehaviour
     /// <param name="roleConfig"></param>
     /// <param name="weaponConfig"></param>
     private async Task LoadRoleAsync(RoleConfiguration roleConfig, WeaponConfiguration weaponConfig)
-    {
-        AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(roleConfig.rolePrefabAddress);
-        await handle.Task;
-        if (handle.Status == AsyncOperationStatus.Succeeded)
+    {       
+        var loadRolePrefabTask = Tools.LoadAddressable<GameObject>(roleConfig.rolePrefabAddress);
+        GameObject _roleObj = await loadRolePrefabTask;
+        if (_roleObj != null)
         {
-            GameObject roleObj = Instantiate(handle.Result, Vector3.zero, Quaternion.identity);
+            GameObject roleObj = Instantiate(_roleObj, Vector3.zero, Quaternion.identity);
             roleObj.name = "PlayerRole";
             roleObj.GetComponent<Character>().Init(roleConfig, weaponConfig);
 
@@ -110,20 +111,16 @@ public class GameApplication : MonoBehaviour
             var cameraFollow = Camera.main.transform.parent.GetComponent<CameraFollow>();
             if (cameraFollow != null)
             {
-                cameraFollow.target = roleObj.transform;
+                cameraFollow.SetTarget(roleObj.transform);
             }
 
-            // 设置敌人管理器的玩家角色
-            if (EnemyManager.Instance != null)
-            {
-                EnemyManager.Instance.role = roleObj.transform;
-            }
+            //设置工具类中的玩家角色引用
+            Tools.SetCharacter(roleObj.GetComponent<Character>());
         }
         else
         {
             Debug.LogError("加载role预制体失败");
         }
-        Addressables.Release(handle);
     }
 
     // 暂停游戏

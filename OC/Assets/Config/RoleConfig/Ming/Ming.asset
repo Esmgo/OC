@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roleName: "\u4E0E\u6D3A"
   description: "\u89D2\u8272\u63CF\u8FF0..."
-  themeColor: {r: 0.98490566, g: 0.35366112, b: 0.2806052, a: 1}
+  themeColor: {r: 1, g: 0.26744106, b: 0.18679237, a: 1}
   rolePrefabAddress: Ming
   maxHealth: 100
   healthRegenRate: 0
@@ -26,9 +26,6 @@ MonoBehaviour:
   dashSpeed: 20
   dashCooldown: 0.5
   attackInterval: 0.3
-  damagePercent: 1
-  physicalDamage: 20
-  energyDamage: 20
   shield: 0
   sanity: 100
   weaponConfig:

@@ -4,12 +4,12 @@ using DG.Tweening;
 public class CameraFollow : MonoBehaviour
 {
     [Header("跟随参数")]
-    public Transform target; // 跟随目标（角色）
-    public float followSpeed = 5f; // 跟随速度
-    public float maxOffsetDistance = 3f; // 角色到屏幕中心最大距离（世界单位）
+    [SerializeField]private Transform target; // 跟随目标（角色）
+    [SerializeField]private float followSpeed = 5f; // 跟随速度
+    [SerializeField]private float maxOffsetDistance = 3f; // 角色到屏幕中心最大距离（世界单位）
 
     [Header("震动参数")]
-    public bool enableCameraShake = true; // 是否启用相机震动
+    [SerializeField]private bool enableCameraShake = true; // 是否启用相机震动
 
     private Camera cam;
     private Tween shakeTween; // 震动动画引用

@@ -24,7 +24,7 @@ public class ItemCollector : MonoBehaviour
         Collider2D[] items = Physics2D.OverlapCircleAll(transform.position, attractionRange, itemLayer);
         foreach (var item in items)
         {
-            item.GetComponent<Item>()?.Attract(transform, attractionSpeed);
+            item.GetComponent<CoinItem>()?.Attract(transform, attractionSpeed);
         }
     }
 }
