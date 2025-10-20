@@ -12,9 +12,9 @@ public class MoveBase : MonoBehaviour
     public float moveSpeed = 1f;
     public float dashSpeed = 2f;
     public float dashCooldown = 0.5f;
-
     private float dashDuration = 0.2f;
-    private Rigidbody2D rb;
+
+    [SerializeField]private Rigidbody2D rb;
     private Vector2 moveInput;
     private bool isDashing = false;
     private float dashTimeLeft;

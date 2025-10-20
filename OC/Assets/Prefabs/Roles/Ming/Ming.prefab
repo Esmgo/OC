@@ -301,8 +301,8 @@ MonoBehaviour:
     damagePercentModifier: 0
     physicalDamageModifier: 0
     physicalDamageModifierPercent: 0
-    elementalDamageModifier: 0
     energyDamageModifier: 0
+    energyDamageModifierPercent: 0
     attackRangeModifier: 0
     knockbackForceModifier: 0
     shieldModifier: 0
@@ -316,14 +316,12 @@ MonoBehaviour:
   moveSpeed: 0
   dashSpeed: 0
   dashCooldown: 0
-  damagePercent: 0
-  physicalDamage: 0
-  elementalDamage: 0
-  energyDamage: 0
   sanity: 0
   shield: 0
   roleName: "\u4E0E\u6D3A"
   description: 1
+  physicalDamage: 0
+  energyDamage: 0
   atttackInterval: 0
 --- !u!114 &8157244089418587124
 MonoBehaviour:
@@ -827,20 +825,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Default Weapon
   attackInterval: 0.2
-  attackRange: 5
   targetLayer:
     serializedVersion: 2
     m_Bits: 0
   knockBackForce: 5
-  weakenedAttackInterval: 1
   damagePercent: 1
-  weakenedDamagePercent: 0.2
   energyCostPerAttack: 0
+  attackRange: 5
   meleeAttackAngle: 45
   meleeFixAngle: 0
   bulletAddress: Bullet_normal_0
   bulletSpeed: 10
-  physicalDamageRatio: 0
-  elementalDamageRatio: 0
-  energyDamageRatio: 0
+  physicalDamage: 0
+  energyDamage: 0
   firePoint: {fileID: 1426043413688775196}

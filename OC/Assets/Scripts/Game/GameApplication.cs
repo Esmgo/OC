@@ -50,7 +50,8 @@ public class GameApplication : MonoBehaviour
         UIManager.Instance.Init();      // UI管理器初始化
         ItemsManager.Instance.Init();   // 物品管理器初始化
         GlobalModificationManager.Instance.Init();      //全局增益管理器初始化
-        await UIManager.Instance.OpenPanelAsync<MainPanel>("MainPanel");    // 打开主界面
+        //await UIManager.Instance.OpenPanelAsync<MainPanel>("MainPanel");    // 打开主界面
+        await UIManager.Instance.OpenPanelAsync<StartPanel>("StartPanel");  // 打开开始界面
     }
 
     /// <summary>

@@ -51,6 +51,7 @@ public class Character : MonoBehaviour
     private float invincibleTimer = 0f; // 无敌计时器
     private bool isInvincible = false; // 是否处于无敌状态
     private float energyRegenValue = 0f; // 能量恢复值累积
+
     private float damagePercent = 1f; // 伤害加成百分比
 
     private void Awake()
@@ -93,6 +94,11 @@ public class Character : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 角色初始化
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="weaponConfig"></param>
     public void Init(RoleConfiguration config, WeaponConfiguration weaponConfig)
     {
         
@@ -167,6 +173,7 @@ public class Character : MonoBehaviour
         {
             currentWeapon.UpdateData(atttackInterval, damagePercent, physicalDamage, energyDamage);
         }
+
         EventCenter.Publish<UpdateInfoDisplayEvent, Character>(this);
     }
 
@@ -197,6 +204,7 @@ public class Character : MonoBehaviour
         {
             currentEnergy = Mathf.Min(_e, maxEnergy);
         }
+
         EventCenter.Publish<UpdateInfoDisplayEvent, Character>(this);
     }
 
@@ -209,7 +217,9 @@ public class Character : MonoBehaviour
         {
             isInvincible = true;
         }
+
         int _h = currentHealth + value;
+
         if (_h <= 0)
         {            
             currentHealth = 0;

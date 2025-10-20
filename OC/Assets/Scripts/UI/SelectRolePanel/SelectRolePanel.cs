@@ -12,8 +12,17 @@ public class SelectRolePanel : UIPanel
     private WeaponConfiguration selectedWeaponConfig;
     private bool isWeaponIconCreated = false;
 
+    private bool isInited = false;
+
     public override void OnOpen()
     {
+        if (!isInited) Init();
+    }
+
+    private void Init()
+    {
+        isInited = true;
+
         EventCenter.Subscribe<RoleSelectedEvent, RoleConfiguration>(OnRoleSelected);
         EventCenter.Subscribe<WeaponSelectedEvent, WeaponConfiguration>(OnWeaponSelected);
 
@@ -21,7 +30,7 @@ public class SelectRolePanel : UIPanel
         InformationField = transform.Find("InformationField").GetComponent<InformationPanel>();
 
         roleList.Init();
-        
+
         RegisterButton("Start", () =>
         {
             GameApplication.Instance.GameStart(selectedRoleConfig, selectedWeaponConfig);
