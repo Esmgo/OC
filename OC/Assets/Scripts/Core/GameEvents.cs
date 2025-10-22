@@ -31,8 +31,10 @@ namespace GameEvents
     #endregion
 
     #region 角色事件
-
-    public struct PlayerAttributeModifierChangedEvent : IGameEvent { }
+    /// <summary>
+    /// 角色属性改变事件
+    /// </summary>
+    public struct PlayerAttributeChangedEvent : IGameEvent { }
 
     /// <summary>
     /// 角色死亡事件

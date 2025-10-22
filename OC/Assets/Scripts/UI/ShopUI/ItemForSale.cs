@@ -25,6 +25,7 @@ public class ItemForSale : MonoBehaviour, IPointerClickHandler
     {
         Debug.Log($"购买物品: {itemConfig.itemName}，价格: {itemConfig.price}");
         ItemsManager.Instance.AddItem(itemConfig);
+        EventCenter.Publish<PlayerAttributeChangedEvent>();
         gameObject.SetActive(false); // 购买后隐藏物品
     }
 }

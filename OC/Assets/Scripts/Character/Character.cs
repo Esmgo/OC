@@ -66,7 +66,7 @@ public class Character : MonoBehaviour
         EventCenter.Unsubscribe<EnergyChangeEvent, int>(Energy);
         EventCenter.Unsubscribe<WaveStartEvent>(OnWaveStart);
         EventCenter.Unsubscribe<SetFlashEvent, float, Color>(SetFlash);
-        EventCenter.Unsubscribe<PlayerAttributeModifierChangedEvent>(UpdateData);
+        EventCenter.Unsubscribe<PlayerAttributeChangedEvent>(UpdateData);
         EventCenter.Unsubscribe<HPChangeEvent, int>(Health);
     }
 
@@ -137,7 +137,7 @@ public class Character : MonoBehaviour
         EventCenter.Subscribe<EnergyChangeEvent, int>(Energy);
         EventCenter.Subscribe<WaveStartEvent>(OnWaveStart);
         EventCenter.Subscribe<SetFlashEvent, float, Color>(SetFlash);
-        EventCenter.Subscribe<PlayerAttributeModifierChangedEvent>(UpdateData);
+        EventCenter.Subscribe<PlayerAttributeChangedEvent>(UpdateData);
         EventCenter.Subscribe<HPChangeEvent, int>(Health);
 
     }
@@ -146,13 +146,12 @@ public class Character : MonoBehaviour
     {
         maxHealth = (int)((roleConfig.maxHealth + modifier.maxHealthModifier + gam.maxHealthModifier)
                     * (1 + modifier.maxHealthModifierPercent + gam.maxHealthModifierPercent));
-        //currentHealth = maxHealth;
-        //maxEnergy = (int)((roleConfig.maxEnergy + modifier.maxEnergyModifier + gam.maxEnergyModifier)
-        //            * (1 + modifier.maxEnergyModifierPercent + gam.maxEnergyModifierPercent));
+        maxEnergy = (int)((roleConfig.maxEnergy + modifier.maxEnergyModifier + gam.maxEnergyModifier)
+                    * (1 + modifier.maxEnergyModifierPercent + gam.maxEnergyModifierPercent));
         //currentEnergy = Math.Clamp(currentEnergy, 0, maxEnergy);
-        
-        moveSpeed = (roleConfig.moveSpeed + modifier.moveSpeedModifier + gam.moveSpeedModifier)
-                    * (1 + modifier.moveSpeedModifierPercent + gam.moveSpeedModifierPercent);
+
+        moveSpeed = 12 * (1 + (roleConfig.moveSpeed + modifier.moveSpeedModifier + gam.moveSpeedModifier)
+                    * (1 + modifier.moveSpeedModifierPercent + gam.moveSpeedModifierPercent) / 40) * 0.7f;
 
         atttackInterval = (weaponConfig.attackInterval + modifier.attackIntervalModifier + gam.attackIntervalModifier)
                     * (1 + modifier.attackIntervalModifierPercent + gam.attackIntervalModifierPercent);

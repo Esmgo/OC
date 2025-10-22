@@ -50,7 +50,7 @@ public class BuffManager : MonoBehaviour
     {
         var newBuff = new T();
         AddBuff(newBuff, duration);
-        EventCenter.Publish<PlayerAttributeModifierChangedEvent>();
+        EventCenter.Publish<PlayerAttributeChangedEvent>();
     }
     
     /// <summary>
@@ -102,7 +102,7 @@ public class BuffManager : MonoBehaviour
         
         buff.OnRemove();
         activeBuffs.Remove(buff);
-        EventCenter.Publish<PlayerAttributeModifierChangedEvent>();
+        EventCenter.Publish<PlayerAttributeChangedEvent>();
 
         Debug.Log($"ÒÆ³ýBuff: {buff.buffName}");
     }
