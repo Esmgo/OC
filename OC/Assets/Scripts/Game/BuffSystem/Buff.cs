@@ -20,12 +20,12 @@ public abstract class Buff
     public bool isActive;       // 是否激活
     
 
-    protected PlayerAttributeModifier targetModifier; // 目标角色
+    protected PropertyModifier targetModifier; // 目标角色
     
     /// <summary>
     /// 初始化Buff
     /// </summary>
-    public virtual void Initialize(PlayerAttributeModifier target, float duration = -1)
+    public virtual void Initialize(PropertyModifier target, float duration = -1)
     {
         this.targetModifier = target;
         this.remainingTime = duration > 0 ? duration : this.duration;

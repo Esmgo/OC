@@ -14,32 +14,35 @@ public class PlayerInfoBar : MonoBehaviour
     [SerializeField] private TextMeshProUGUI energyText;
     [SerializeField] private TextMeshProUGUI energyWarnning;
 
-    private void Awake()
+    private Character character;
+
+    public void Init()
     {
-        EventCenter.Subscribe<UpdateInfoDisplayEvent, Character>(UpdateBar);
+        character = Tools.GetCharacter();
+        character.OnStatChanged += UpdateBar;
     }
 
-    private void OnDestroy()
-    {
-        Unsubscribe();
-    }
+    //private void Update()
+    //{
+    //     UpdateBar();
+    //}
 
-    private void Unsubscribe()
+    private void UpdateBar()
     {
+        if (character == null) 
+        {
+            Debug.LogError("PlayerInfoBar: ½ÇÉ«Îª¿Õ£¡");
+            return; 
+        }
 
-        EventCenter.Unsubscribe<UpdateInfoDisplayEvent, Character>(UpdateBar);
-    }
-
-    private void UpdateBar(Character c)
-    {
         if (healthBarFill != null)
         {
-            healthBarFill.fillAmount = (float)c.currentHealth/c.maxHealth;
-            healthText.text = $"{c.currentHealth}/{c.maxHealth}";
+            healthBarFill.fillAmount = (float)character.currentHealth / character.currentMaxHealth;
+            healthText.text = $"{character.currentHealth}/{character.currentMaxHealth}";
         }
         if (healthWarnning != null)
         {
-            if(c.currentHealth <= c.maxHealth * 0.3f)
+            if(character.currentHealth <= character.currentMaxHealth * 0.3f)
             {
                 healthWarnning.gameObject.SetActive(true);
             }
@@ -50,12 +53,12 @@ public class PlayerInfoBar : MonoBehaviour
         }
         if (energyBarFill != null)
         {
-            energyBarFill.fillAmount = (float)c.currentEnergy / c.maxEnergy;
-            energyText.text = $"{c.currentEnergy} / {c.maxEnergy}";
+            energyBarFill.fillAmount = (character.currentEnergy / character.currentMaxEnergy);
+            energyText.text = $"{character.currentEnergy} / {character.currentMaxEnergy}";
         }
         if (energyWarnning != null)
         {
-            if (c.currentEnergy <= c.maxEnergy * 0.3f)
+            if (character.currentEnergy <= character.currentMaxEnergy * 0.3f)
             {
                 energyWarnning.gameObject.SetActive(true);
             }

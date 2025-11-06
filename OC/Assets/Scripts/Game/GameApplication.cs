@@ -48,8 +48,8 @@ public class GameApplication : MonoBehaviour
         DOTween.Init().SetCapacity(200, 50);        // DOTween初始化，设置初始容量
         Tools.Init();       // 工具类初始化
         UIManager.Instance.Init();      // UI管理器初始化
-        ItemsManager.Instance.Init();   // 物品管理器初始化
-        GlobalModificationManager.Instance.Init();      //全局增益管理器初始化
+        ItemManager.Instance.Init();   // 物品管理器初始化
+        //GlobalStatModifier.Instance.Init();      //全局增益管理器初始化     这个，不需要了）
         //await UIManager.Instance.OpenPanelAsync<MainPanel>("MainPanel");    // 打开主界面
         await UIManager.Instance.OpenPanelAsync<StartPanel>("StartPanel");  // 打开开始界面
     }
@@ -106,7 +106,7 @@ public class GameApplication : MonoBehaviour
         {
             GameObject roleObj = Instantiate(_roleObj, Vector3.zero, Quaternion.identity);
             roleObj.name = "PlayerRole";
-            roleObj.GetComponent<Character>().Init(roleConfig, weaponConfig);
+            roleObj.GetComponent<Character>().Init(roleConfig);
 
             // 设置摄像机跟随角色
             var cameraFollow = Camera.main.transform.parent.GetComponent<CameraFollow>();

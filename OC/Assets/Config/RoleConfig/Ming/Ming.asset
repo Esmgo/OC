@@ -17,16 +17,33 @@ MonoBehaviour:
   themeColor: {r: 1, g: 0.26744106, b: 0.18679237, a: 1}
   rolePrefabAddress: Ming
   maxHealth: 100
-  healthRegenRate: 0
+  healthRegen: 0
   maxEnergy: 100
-  energyRegenRate: 1
+  energyRegen: 0
+  cooldownReductionPercent: 0
+  dashCooldown: 0.5
+  moveSpeed: 12
+  attackInterval: 0.3
+  attackSpeedReductionPercent: 0
+  physicalDamage: 0
+  energyDamage: 0
+  elementalDamage: 0
+  hitCoolDown: 0.5
+  dashSpeed: 20
+  attackSpeedPercent: 0
+  sanity: 100
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  knockBackForce: 5
+  energyCostPerAttack: 0
+  attackRange: 5
+  meleeAttackAngle: 45
+  meleeFixAngle: 0
+  bulletAddress: 
+  bulletSpeed: 10
+  criticalRate: 0.1
   roleIcon: {fileID: 1334636691614601774, guid: ceda3e63dd33db14aa9c0faa1838740d, type: 3}
   standImage: {fileID: 0}
-  moveSpeed: 12
-  dashSpeed: 20
-  dashCooldown: 0.5
-  attackInterval: 0.3
-  shield: 0
-  sanity: 100
   weaponConfig:
   - {fileID: 11400000, guid: 342908676bc340048841ce5fd8c98bdf, type: 2}

@@ -1,124 +1,110 @@
-using GameEvents;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using static UnityEditor.Progress;
-using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.UI;
 
 public class ShopUI : UIPanel
 {
-    private GameObject itemForSalePrefab;
-    private GameObject list;
-    private TextMeshProUGUI plyerInfo;
-    private Character character;
-    private List<ItemConfiguration> itemsForSaleConfigs;
-    private List<GameObject> itemCreated = new();
-    private bool isItemCreated = false;
+    #region 字段
 
-    private bool isInited = false;
+    [Header("UI 引用")]
+    private TextMeshProUGUI plyerInfoText;
+    private Image playerInfoBackground;
+    private Image background;
+    private GameObject list;
+
+    [Header("预制件与配置")]
+    private GameObject itemForSalePrefab;
+    private List<ItemConfiguration> itemsForSaleConfigs;
+
+    [Header("运行时数据")]
+    private Character character;
+    private List<GameObject> itemCreated = new();
+    private bool isInitialized = false;
+    private bool isCreatingItems = false;
+
+    private Vector3 playerInfoOnScreenPos;
+    private Vector3 playerInfoOffScreenPos;
+    private bool arePositionsInitialized = false;
+
+    #endregion
+
+    #region UIPanel 生命周期
 
     public override void OnOpen()
     {
-        Init();
-
-        
-        //if (itemForSalePrefab != null && list != null)
-        //{
-            
-        //}
-    }
-
-    private void Update()
-    {
-        if (isInited && character != null)
-        {
-            // 使用 StringBuilder 来高效地构建多行文本
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-
-            // 使用 <pos=60%> 标签将数字部分对齐到文本框宽度的 60% 位置
-            // 你可以根据需要调整这个百分比
-            sb.AppendLine($"最大生命值<pos=60%>{character.maxHealth}");
-            sb.AppendLine($"移动速度<pos=60%>{character.moveSpeed}");
-            sb.AppendLine($"物理伤害<pos=60%>{character.physicalDamage}");
-            sb.AppendLine($"异能伤害<pos=60%>{character.energyDamage}");
-
-            plyerInfo.text = sb.ToString();
-        }
-    }
-
-    private async void Init()
-    {
-        if(isInited)
-            return;
-        isInited = true;
-        //if (itemForSalePrefab == null)
-            itemForSalePrefab = await Tools.LoadAddressable<GameObject>("ItemForSale");
-
-        //if (list == null)
-            list = transform.Find("List").gameObject;
-
-        //if (itemsForSaleConfigs == null)
-            await LoadItemConfigurations();
-
-        plyerInfo = transform.Find("PlayerInfo/Text").GetComponent<TextMeshProUGUI>();
         character = Tools.GetCharacter();
-
-        if (itemForSalePrefab != null && list != null)
+        if (character == null)
         {
-            RefreshItems();
-            //if (!isItemCreated)
-            //{
-            //    CreateShopItems(3);
-            //    isItemCreated = true;
-            //}
-            //else
-            //{
-            //    foreach (var item in itemCreated)
-            //    {
-            //        item.SetActive(true);
-            //        item.GetComponent<ItemForSale>().Init(itemsForSaleConfigs[Tools.RandomInt(0, itemsForSaleConfigs.Count)]);
-            //    }
-            //}
+            Debug.LogError("ShopUI: 角色为空，无法打开商店！");
+            return;
         }
 
-        //Debug.Log("itemCreated.Count: " + itemCreated.Count);
+        // 订阅事件总是在最前面，确保不会错过任何变化
+        character.OnStatChanged += UpdateInfoDisplay;
 
-        RegisterButton("Continue", async () => {
-            EnemyManager.Instance.StartWave();
-            await UIManager.Instance.OpenPanelAsync<FightUI>("FightUI");
-            UIManager.Instance.ClosePanel("ShopUI");
-        });
-
-        RegisterButton("Refresh", () => {
+        if (!isInitialized)
+        {
+            // 首次打开，执行异步初始化
+            InitializeAsync();
+        }
+        else
+        {
+            // 非首次打开，直接刷新和播放动画
             RefreshItems();
-        });
+            UpdateInfoDisplay();
+            StartCoroutine(OpenAnimation());
+        }
     }
+
+    public override void OnClose()
+    {
+        if (character != null)
+        {
+            character.OnStatChanged -= UpdateInfoDisplay;
+        }
+    }
+
+    #endregion
+
+    #region 初始化
 
     /// <summary>
-    /// 刷新商店物品
+    /// 异步初始化UI，仅在首次打开时调用
     /// </summary>
-    private void RefreshItems()
+    private async void InitializeAsync()
     {
-        if (!isItemCreated)
+        // --- 1. 加载必要的UI组件和资源 ---
+        plyerInfoText = transform.Find("PlayerInfoBackground/Text").GetComponent<TextMeshProUGUI>();
+        background = transform.Find("Background").GetComponent<Image>();
+        playerInfoBackground = transform.Find("PlayerInfoBackground").GetComponent<Image>();
+        list = transform.Find("List").gameObject;
+
+        // 异步加载资源
+        itemForSalePrefab = await Tools.LoadAddressable<GameObject>("ItemForSale");
+        await LoadItemConfigurations();
+
+        // --- 2. 注册按钮事件 ---
+        RegisterButton("Continue", OnContinueClicked);
+        RegisterButton("Refresh", RefreshItems);
+
+        if (!arePositionsInitialized)
         {
-            CreateShopItems(3);
-            isItemCreated = true;
+            playerInfoOnScreenPos = playerInfoBackground.rectTransform.position;
+            playerInfoOffScreenPos = new Vector3(playerInfoOnScreenPos.x - 500, playerInfoOnScreenPos.y, playerInfoOnScreenPos.z);
+            arePositionsInitialized = true;
         }
-        //else
-        //{
-            foreach (var item in itemCreated)
-            {
-                item.SetActive(true);
-                item.GetComponent<ItemForSale>().Init(itemsForSaleConfigs[Tools.RandomInt(0, itemsForSaleConfigs.Count)]);
-            }
-        //}
+
+        // --- 3. 初始化完成，更新状态并执行首次打开逻辑 ---
+        isInitialized = true;
+        RefreshItems();
+        UpdateInfoDisplay();
+        StartCoroutine(OpenAnimation());
     }
-
-
 
     /// <summary>
     /// 加载所有带"Item"标签的物品配置文件
@@ -128,7 +114,6 @@ public class ShopUI : UIPanel
         try
         {
             itemsForSaleConfigs = await Tools.LoadAddressablesByLabel<ItemConfiguration>("Item");
-            //Debug.Log($"成功加载 {itemsForSaleConfigs.Count} 个物品预制体");
         }
         catch (System.Exception ex)
         {
@@ -137,23 +122,106 @@ public class ShopUI : UIPanel
         }
     }
 
+    #endregion
+
+    #region UI 逻辑
+
     /// <summary>
-    /// 根据加载的物品创建商店项目
+    /// 刷新商店展示的物品
     /// </summary>
-    private void CreateShopItems(int value)
+    private void RefreshItems()
     {
-        if (itemsForSaleConfigs.Count == 0)
+        if (itemCreated.Count == 0 && !isCreatingItems)
         {
-            Debug.LogWarning("没有找到带'Item'标签的物品!!!!!!");
+            // 如果从未创建过物品，则创建它们
+            CreateShopItems(3);
         }
         else
         {
-            for (int i = 0; i < value; i++)
+            // 如果已经创建过，则刷新它们的内容
+            foreach (var item in itemCreated)
             {
-                var shopItem = Instantiate(itemForSalePrefab, list.transform);
-                shopItem.GetComponent<ItemForSale>().Init(itemsForSaleConfigs[Tools.RandomInt(0, itemsForSaleConfigs.Count)]);
-                itemCreated.Add(shopItem);
+                item.SetActive(true);
+                item.GetComponent<ItemForSale>().Init(itemsForSaleConfigs[Tools.RandomInt(0, itemsForSaleConfigs.Count)]);
             }
         }
     }
+
+    /// <summary>
+    /// 根据加载的物品创建商店项目
+    /// </summary>
+    private void CreateShopItems(int count)
+    {
+        if (itemsForSaleConfigs == null || itemsForSaleConfigs.Count == 0)
+        {
+            Debug.LogWarning("物品配置尚未加载或为空，无法创建商店物品。");
+            return;
+        }
+        if (itemForSalePrefab == null)
+        {
+            Debug.LogError("商店物品预制件尚未加载，无法创建。");
+            return;
+        }
+
+        isCreatingItems = true;
+        for (int i = 0; i < count; i++)
+        {
+            var shopItem = Instantiate(itemForSalePrefab, list.transform);
+            shopItem.GetComponent<ItemForSale>().Init(itemsForSaleConfigs[Tools.RandomInt(0, itemsForSaleConfigs.Count)]);
+            itemCreated.Add(shopItem);
+        }
+        isCreatingItems = false;
+    }
+
+    /// <summary>
+    /// 更新右侧的角色信息面板
+    /// </summary>
+    private void UpdateInfoDisplay()
+    {
+        if (!isInitialized || character == null) return;
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"最大生命值<pos=60%>{character.currentMaxHealth}");
+        sb.AppendLine($"生命回复<pos=60%>{character.currentHealthRegenRate:F1}/秒");
+        sb.AppendLine($"最大能量值<pos=60%>{character.currentMaxEnergy}");
+        sb.AppendLine($"能量回复<pos=60%>{character.currentEnergyRegenRate:F1}/秒");
+        sb.AppendLine($"冷却缩减<pos=60%>{character.currentCooldownReductionPercent * 100:F0}%");
+        sb.AppendLine($"冲刺冷却<pos=60%>{character.currentDashCoolDown:F1}秒");
+        sb.AppendLine($"移动速度<pos=60%>{character.currentMoveSpeed:F1}");
+        sb.AppendLine($"攻击间隔<pos=60%>{character.currentAttackInterval:F2}秒");
+        sb.AppendLine($"物理伤害<pos=60%>{character.currentPhysicalDamage:F0}");
+        sb.AppendLine($"异能伤害<pos=60%>{character.currentManaDamage:F0}");
+        sb.AppendLine($"元素伤害<pos=60%>{character.currentElementalDamage:F0}");
+
+        plyerInfoText.text = sb.ToString();
+    }
+
+    /// <summary>
+    /// UI打开时的动画效果
+    /// </summary>
+    private IEnumerator OpenAnimation()
+    {
+        // 确保动画开始前，面板在屏幕外的位置
+        playerInfoBackground.rectTransform.position = playerInfoOffScreenPos;
+
+        background.DOFade(1f, 0.5f);
+
+        // 从屏幕外的位置移动到屏幕内的位置
+        playerInfoBackground.rectTransform.DOMoveX(playerInfoOnScreenPos.x, 1f).SetEase(Ease.OutQuad);
+
+        yield return null;
+    }
+
+    #endregion
+
+    #region 按钮事件处理
+
+    private async void OnContinueClicked()
+    {
+        EnemyManager.Instance.StartWave();
+        await UIManager.Instance.OpenPanelAsync<FightUI>("FightUI");
+        UIManager.Instance.ClosePanel("ShopUI");
+    }
+
+    #endregion
 }

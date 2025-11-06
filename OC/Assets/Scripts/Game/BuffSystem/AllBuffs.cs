@@ -36,18 +36,22 @@ namespace BuffSystem
         {
             if (targetModifier == null) return;
 
-            targetModifier.AddModifier(AttributeType.moveSpeedModifier, ModificationType.Add, 1f);
-            targetModifier.AddModifier(AttributeType.attackIntervalModifierPercent, ModificationType.Add, -0.5f);
-            targetModifier.AddModifier(AttributeType.damagePercentModifier, ModificationType.Add, 2f);
+            targetModifier.AddModifier(ModifierType.MoveSpeed_Percent, 0.5f);
+            targetModifier.AddModifier(ModifierType.AttackIntervalReduction_Percent, -0.5f);
+            targetModifier.AddModifier(ModifierType.PhysicalDamage_Percent, 2f);
+            targetModifier.AddModifier(ModifierType.ManaDamage_Percent, 2f);
+            targetModifier.AddModifier(ModifierType.ElementalDamage_Percent, 2f);
 
             EventCenter.Publish<SetFlashEvent, float, Color>(duration, new Color(1, 0, 0.8f));
         }
 
         public override void OnRemove()
         {
-            targetModifier.AddModifier(AttributeType.moveSpeedModifier, ModificationType.Add, -1f);
-            targetModifier.AddModifier(AttributeType.attackIntervalModifierPercent, ModificationType.Add, 0.5f);
-            targetModifier.AddModifier(AttributeType.damagePercentModifier, ModificationType.Add, -2f);
+            targetModifier.AddModifier(ModifierType.MoveSpeed_Percent, -0.5f);
+            targetModifier.AddModifier(ModifierType.AttackIntervalReduction_Percent, 0.5f);
+            targetModifier.AddModifier(ModifierType.PhysicalDamage_Percent, -2f);
+            targetModifier.AddModifier(ModifierType.ManaDamage_Percent, -2f);
+            targetModifier.AddModifier(ModifierType.ElementalDamage_Percent, -2f);
 
             EventCenter.Publish<SetFlashEvent, float, Color>(duration, Color.black);
         }
@@ -70,14 +74,19 @@ namespace BuffSystem
         {
             if (targetModifier == null) return;
 
-            targetModifier.AddModifier(AttributeType.attackIntervalModifierPercent, ModificationType.Add, 0.5f);
-            targetModifier.AddModifier(AttributeType.damagePercentModifier, ModificationType.Add, -0.5f);
+            targetModifier.AddModifier(ModifierType.AttackIntervalReduction_Percent, 0.5f);
+            targetModifier.AddModifier(ModifierType.PhysicalDamage_Percent, -0.5f);
+            targetModifier.AddModifier(ModifierType.ManaDamage_Percent, -0.5f);
+            targetModifier.AddModifier(ModifierType.ElementalDamage_Percent, -0.5f);
+            //ÒÆËÙÔö¼Ó
         }
 
         public override void OnRemove()
         {
-            targetModifier.AddModifier(AttributeType.attackIntervalModifierPercent, ModificationType.Add, -0.5f);
-            targetModifier.AddModifier(AttributeType.damagePercentModifier, ModificationType.Add, 0.5f);
+            targetModifier.AddModifier(ModifierType.AttackIntervalReduction_Percent, -0.5f);
+            targetModifier.AddModifier(ModifierType.PhysicalDamage_Percent, 0.5f);
+            targetModifier.AddModifier(ModifierType.ManaDamage_Percent, 0.5f);
+            targetModifier.AddModifier(ModifierType.ElementalDamage_Percent, 0.5f);
 
             EventCenter.Publish<WeakOverEvent>();
         }

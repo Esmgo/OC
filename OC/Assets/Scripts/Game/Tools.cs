@@ -15,6 +15,8 @@ public static class Tools
     {
         Random.InitState(GenerateRandomSeed());
         character = null;
+
+        //增加统一的资源加载
     }
 
     /// <summary>
@@ -112,15 +114,15 @@ public static class Tools
         character = c;
     }
 
-    public static PlayerAttributeModifier GetGlobalAttributeModifier()
+    public static PropertyModifier GetGlobalPlayerPropertyModifier()
     {
-        if (GlobalModificationManager.Instance != null)
+        if (GlobalStatModifier.Instance != null)
         {
-            return GlobalModificationManager.Instance.globalPlayerAttributeModifier;
+            return GlobalStatModifier.Instance.GlobalModifierForPlayer;
         }
         else
         {
-            Debug.LogWarning("未找到全局属性管理器！！");
+            Debug.LogWarning("未找到角色全局属性管理器！！");
             return null;
         }
     }

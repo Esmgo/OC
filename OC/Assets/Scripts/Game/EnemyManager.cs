@@ -125,6 +125,9 @@ public class EnemyManager : MonoBehaviour
 
     void Update()
     {
+        //减少敌人update调用，统一管理
+        { }
+
         if (!spawnEnabled || character == null) return;
 
         // 延迟处理

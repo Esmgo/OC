@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 4850348867587954032}
   - component: {fileID: 8482182546523081095}
   - component: {fileID: 6898348091682483036}
+  - component: {fileID: 829353754269665610}
   m_Layer: 5
   m_Name: ItemForSale
   m_TagString: Untagged
@@ -261,6 +262,18 @@ MonoBehaviour:
   itemName: {fileID: 6596069276344552319}
   itemDescription: {fileID: 1040012096972519758}
   itemPrice: {fileID: 297787230175649081}
+--- !u!225 &829353754269665610
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1197450321015916547}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2162193829922833850
 GameObject:
   m_ObjectHideFlags: 0

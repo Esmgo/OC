@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 1907118120577312257}
   - component: {fileID: 810021701576004683}
   - component: {fileID: 934996216584524831}
+  - component: {fileID: 942335088570133112}
   m_Layer: 7
   m_Name: Slime_boom
   m_TagString: Untagged
@@ -355,6 +356,19 @@ MonoBehaviour:
   explosionDamage: 10
   explosionRadius: 2
   knockbackForce: 10
+  maxTargets: 50
+--- !u!210 &942335088570133112
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422069407525124228}
+  m_Enabled: 1
+  m_SortingLayerID: -1240798073
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!1 &3331810210438137851
 GameObject:
   m_ObjectHideFlags: 0

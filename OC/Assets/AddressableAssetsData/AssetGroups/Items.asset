@@ -17,20 +17,26 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: e91ff1dd51924d64eb988b3bf451b417
   m_SerializeEntries:
-  - m_GUID: be4e30d9bdd619e4f99bd0adc71c6057
-    m_Address: Assets/Config/ItemConfig/2_Book.asset
+  - m_GUID: 06e30757b81574842852cfc1b63c20fc
+    m_Address: ItemConfig/Apple
     m_ReadOnly: 0
     m_SerializedLabels:
     - Item
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d3e8f231dc660b74aa24bc4eb27cdc45
-    m_Address: Assets/Config/ItemConfig/0_Apple.asset
+  - m_GUID: bb5e1a4766bc2f04e8b6d3bd82b05776
+    m_Address: ItemConfig/PapyrusManuscript
     m_ReadOnly: 0
     m_SerializedLabels:
     - Item
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: de610a136c1f61d45858a7776c4027c4
-    m_Address: Assets/Config/ItemConfig/1_Banana.asset
+  - m_GUID: ccc4b1fffa040e7448c9c6352ae00895
+    m_Address: ItemConfig/HolyGrail
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d81cc1911b0846f45a8e570bd024fecc
+    m_Address: ItemConfig/Banana
     m_ReadOnly: 0
     m_SerializedLabels:
     - Item

@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 1907118120577312257}
   - component: {fileID: 810021701576004683}
   - component: {fileID: 509892643138283237}
+  - component: {fileID: 3460827017725894096}
   m_Layer: 7
   m_Name: Slime_normal
   m_TagString: Untagged
@@ -352,6 +353,18 @@ MonoBehaviour:
   maxHp: 100
   canvas: {fileID: 6685942076804534674}
   spriteRenderer: {fileID: 8105447074121827392}
+--- !u!210 &3460827017725894096
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422069407525124228}
+  m_Enabled: 1
+  m_SortingLayerID: -409244979
+  m_SortingLayer: 4
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!1 &3331810210438137851
 GameObject:
   m_ObjectHideFlags: 0

@@ -34,7 +34,7 @@ namespace GameEvents
     /// <summary>
     /// 角色属性改变事件
     /// </summary>
-    public struct PlayerAttributeChangedEvent : IGameEvent { }
+    public struct PlayerPropertyChangedEvent : IGameEvent { }
 
     /// <summary>
     /// 角色死亡事件

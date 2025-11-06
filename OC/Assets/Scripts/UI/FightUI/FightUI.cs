@@ -17,6 +17,8 @@ public class FightUI : UIPanel
     private TextMeshProUGUI textUp;
     private TextMeshProUGUI textDown;
 
+    private PlayerInfoBar playerInfoBar;
+
     private Vector3 originalTextUpPos;
     private Vector3 originalTextDownPos;
 
@@ -26,6 +28,9 @@ public class FightUI : UIPanel
 
         timeText = transform.Find("TimeText").GetComponent<TextMeshProUGUI>();
         coinsText = transform.Find("Coins/Text").GetComponent<TextMeshProUGUI>();
+
+        playerInfoBar = transform.Find("PlayerInfoBar").GetComponent<PlayerInfoBar>();
+        playerInfoBar.Init();
 
         waveCompletedGroup = transform.Find("WaveCompleted").gameObject;
         bar = transform.Find("WaveCompleted/Bar").GetComponent<Image>();
@@ -51,7 +56,7 @@ public class FightUI : UIPanel
         }
         if (coinsText != null) 
         {
-            coinsText.text = $"{ItemsManager.Instance.GetCoins()}";
+            //coinsText.text = $"{ItemManager.Instance.GetCoins()}";
         }
     }
 

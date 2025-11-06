@@ -7,22 +7,23 @@ using UnityEngine;
 /// <summary>
 /// Buff 管理器
 /// </summary>
+[RequireComponent(typeof(Character))]
 public class BuffManager : MonoBehaviour
 {
     [Header("调试信息")]
     public List<Buff> activeBuffs = new List<Buff>();
 
-    private PlayerAttributeModifier modifier;
-    
-    void Awake()
-    {
-        modifier = GetComponent<Character>().modifier;
-    }
+    private PropertyModifier modifier;
     
     void Update()
     {
         UpdateBuffs();
     }
+
+    //public void Init()
+    //{
+    //    modifier = GetComponent<Character>().AddModifier;
+    //}
     
     /// <summary>
     /// 更新所有Buff
@@ -44,19 +45,19 @@ public class BuffManager : MonoBehaviour
     }
     
     /// <summary>
-    /// 添加Buff
+    /// 添加Buff外部调用
     /// </summary>
     public void AddBuff<T>(float duration = -1) where T : Buff, new()
     {
         var newBuff = new T();
         AddBuff(newBuff, duration);
-        EventCenter.Publish<PlayerAttributeChangedEvent>();
+        EventCenter.Publish<PlayerPropertyChangedEvent>();
     }
     
     /// <summary>
-    /// 添加Buff
+    /// 添加Buff内部实现
     /// </summary>
-    public void AddBuff(Buff newBuff, float duration = -1)
+    private void AddBuff(Buff newBuff, float duration = -1)
     {
         if (newBuff == null || modifier == null) return;
         
@@ -102,7 +103,7 @@ public class BuffManager : MonoBehaviour
         
         buff.OnRemove();
         activeBuffs.Remove(buff);
-        EventCenter.Publish<PlayerAttributeChangedEvent>();
+        EventCenter.Publish<PlayerPropertyChangedEvent>();
 
         Debug.Log($"移除Buff: {buff.buffName}");
     }
