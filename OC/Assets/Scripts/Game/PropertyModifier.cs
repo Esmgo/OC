@@ -55,8 +55,8 @@ public class PropertyModifier
 public enum ModifierType
 {
     MaxHealth_Add,          
-    MaxHealth_Percent,    
-    
+    MaxHealth_Percent,  
+
     HealthRegen_Add,        
     HealthRegen_Percent,    
 
@@ -85,10 +85,10 @@ public enum ModifierType
 /// 属性修改效果的数据结构，用于在Inspector中配置。
 /// </summary>
 [Serializable]
-public class ModifierEffect
+public class ModifierPack
 {
     [Tooltip("属性类型")]
-    public ModifierType ModifierType;
+    public ModifierType modifierType;
 
     [Tooltip("修改值")]
     public float value = 0f;

@@ -8,21 +8,14 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    // Addressables面板key注册表
-    private Dictionary<string, string> panelKeys = new Dictionary<string, string>();
     // 活动面板
     private Dictionary<string, UIPanel> activePanels = new Dictionary<string, UIPanel>();
     // UI父节点
     public Transform uiRoot;
 
-    public void Init()
+    public async void Init()
     {
-        RegisterPanel("StartPanel", "StartPanel");
-        RegisterPanel("MainPanel", "MainPanel");
-        RegisterPanel("SelectRolePanel", "SelectRolePanel");
-        RegisterPanel("PausePanel", "PausePanel");
-        RegisterPanel("FightUI", "FightUI");
-        RegisterPanel("ShopUI", "ShopUI");
+        await ResourceManager.Instance.LoadResourcesByLabelAsync<GameObject>("UI");
     }
 
     void Awake()
@@ -40,17 +33,11 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 注册UI面板的Addressable key
+    /// 打开面板
     /// </summary>
-    public void RegisterPanel(string panelName, string addressableKey)
-    {
-        if (!panelKeys.ContainsKey(panelName))
-            panelKeys.Add(panelName, addressableKey);
-    }
-
-    /// <summary>
-    /// 异步打开UI面板
-    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="panelName">面板名，与AA地址相同</param>
+    /// <returns></returns>
     public async Task<T> OpenPanelAsync<T>(string panelName) where T : UIPanel
     {
         if (activePanels.ContainsKey(panelName))
@@ -60,24 +47,8 @@ public class UIManager : MonoBehaviour
             return activePanels[panelName] as T;
         }
 
-        if (!panelKeys.ContainsKey(panelName))
-        {
-            Debug.LogError($"UIManager: 未注册面板 {panelName}");
-            return null;
-        }
-         
-        string addressableKey = panelKeys[panelName];
+        GameObject go = Instantiate(await ResourceManager.Instance.LoadResourceAsync<GameObject>(panelName, "UI"), uiRoot);
 
-        // Addressables异步加载
-        AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
-        await handle.Task;
-        if (handle.Status != AsyncOperationStatus.Succeeded)
-        {
-            Debug.LogError($"UIManager: Addressables 加载失败 {addressableKey}");
-            return null;
-        }
-
-        GameObject go = Instantiate(handle.Result, uiRoot);
         T panel = go.GetComponent<T>();
         if (panel == null)
             panel = go.AddComponent<T>();

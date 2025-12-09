@@ -19,7 +19,7 @@ public class ValuePool
 
     public ValuePool(float maxValue)
     {
-        maxValue = Mathf.Max(0, maxValue);
+        this.maxValue = Mathf.Max(0, maxValue);
         currentValue = maxValue;
     }
 

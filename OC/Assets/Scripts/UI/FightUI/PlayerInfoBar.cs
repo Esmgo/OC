@@ -2,6 +2,7 @@ using GameEvents;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,12 +15,21 @@ public class PlayerInfoBar : MonoBehaviour
     [SerializeField] private TextMeshProUGUI energyText;
     [SerializeField] private TextMeshProUGUI energyWarnning;
 
-    private Character character;
+    private CharacterComponent character;
 
     public void Init()
     {
-        character = Tools.GetCharacter();
-        character.OnStatChanged += UpdateBar;
+        character = CharacterManager.Instance.currentCharacter;
+        //character.OnStatChanged += UpdateBar;
+    }
+    private void OnDisable()
+    {
+        //character.OnStatChanged -= UpdateBar;
+    }
+
+    private void OnDestroy()
+    {
+        //character.OnStatChanged -= UpdateBar;
     }
 
     //private void Update()
@@ -37,35 +47,35 @@ public class PlayerInfoBar : MonoBehaviour
 
         if (healthBarFill != null)
         {
-            healthBarFill.fillAmount = (float)character.currentHealth / character.currentMaxHealth;
-            healthText.text = $"{character.currentHealth}/{character.currentMaxHealth}";
+            //healthBarFill.fillAmount = (float)character.currentHealth / character.currentMaxHealth;
+            //healthText.text = $"{character.currentHealth}/{character.currentMaxHealth}";
         }
         if (healthWarnning != null)
         {
-            if(character.currentHealth <= character.currentMaxHealth * 0.3f)
-            {
-                healthWarnning.gameObject.SetActive(true);
-            }
-            else
-            {
-                healthWarnning.gameObject.SetActive(false);
-            }
+            //if(character.currentHealth <= character.currentMaxHealth * 0.3f)
+            //{
+            //    healthWarnning.gameObject.SetActive(true);
+            //}
+            //else
+            //{
+            //    healthWarnning.gameObject.SetActive(false);
+            //}
         }
-        if (energyBarFill != null)
-        {
-            energyBarFill.fillAmount = (character.currentEnergy / character.currentMaxEnergy);
-            energyText.text = $"{character.currentEnergy} / {character.currentMaxEnergy}";
-        }
-        if (energyWarnning != null)
-        {
-            if (character.currentEnergy <= character.currentMaxEnergy * 0.3f)
-            {
-                energyWarnning.gameObject.SetActive(true);
-            }
-            else
-            {
-                energyWarnning.gameObject.SetActive(false);
-            }
-        }
+        //if (energyBarFill != null)
+        //{
+        //    energyBarFill.fillAmount = (character.currentEnergy / character.currentMaxEnergy);
+        //    energyText.text = $"{character.currentEnergy} / {character.currentMaxEnergy}";
+        //}
+        //if (energyWarnning != null)
+        //{
+        //    if (character.currentEnergy <= character.currentMaxEnergy * 0.3f)
+        //    {
+        //        energyWarnning.gameObject.SetActive(true);
+        //    }
+        //    else
+        //    {
+        //        energyWarnning.gameObject.SetActive(false);
+        //    }
+        //}
     }
 }

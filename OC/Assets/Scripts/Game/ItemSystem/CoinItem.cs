@@ -42,7 +42,7 @@ public class CoinItem : MonoBehaviour,IPoolable
     protected virtual void OnCollected()
     {
         //ItemManager.Instance.Coin(1);
-        ObjectPoolManager.Instance.ReturnObject("Coin", gameObject); // 将金币返回对象池
+        ObjectPoolManager.Instance.ReturnObject(gameObject); // 将金币返回对象池
     }
 
     public void OnGetFromPool()

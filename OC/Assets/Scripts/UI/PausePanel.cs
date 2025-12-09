@@ -6,7 +6,7 @@ public class PausePanel : UIPanel
 {
     public override void OnOpen()
     {
-        RegisterButton("Continue", () => GameApplication.Instance.ResumeGame());
-        RegisterButton("Quit", () => GameApplication.Instance.ExitGame());
+        RegisterButton("Continue", () => GameStateManager.Instance.ResumeGame());
+        RegisterButton("Quit", () => GameStateManager.Instance.ExitGame());
     }
 }

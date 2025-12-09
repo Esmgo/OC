@@ -169,7 +169,7 @@ public class TextPopUp : MonoBehaviour, IPoolable
         // 优先使用通用对象池
         if (ObjectPoolManager.Instance != null && ObjectPoolManager.Instance.HasPool("TextPopUp"))
         {
-            ObjectPoolManager.Instance.ReturnObject("TextPopUp", gameObject);
+            ObjectPoolManager.Instance.ReturnObject(gameObject);
         }
         else
         {

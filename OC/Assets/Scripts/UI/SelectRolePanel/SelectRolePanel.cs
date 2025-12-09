@@ -6,11 +6,7 @@ using UnityEngine;
 public class SelectRolePanel : UIPanel
 {
     private RoleList roleList;
-    private InformationPanel InformationField;
-
-    private RoleConfiguration selectedRoleConfig;
-    private WeaponConfiguration selectedWeaponConfig;
-    private bool isWeaponIconCreated = false;
+    private InformationPanel informationField;
 
     private bool isInited = false;
 
@@ -22,18 +18,16 @@ public class SelectRolePanel : UIPanel
     private void Init()
     {
         isInited = true;
-
-        EventCenter.Subscribe<RoleSelectedEvent, RoleConfiguration>(OnRoleSelected);
-        EventCenter.Subscribe<WeaponSelectedEvent, WeaponConfiguration>(OnWeaponSelected);
-
+ 
         roleList = transform.Find("RoleList").GetComponent<RoleList>();
-        InformationField = transform.Find("InformationField").GetComponent<InformationPanel>();
+        informationField = transform.Find("InformationField").GetComponent<InformationPanel>();
 
+        roleList.OnCharacterSelected = OnCharacterSelected;
         roleList.Init();
 
         RegisterButton("Start", () =>
         {
-            GameApplication.Instance.GameStart(selectedRoleConfig, selectedWeaponConfig);
+            GameApplication.Instance.GameStart();
             // 关闭当前面板
             UIManager.Instance.ClosePanel("SelectRolePanel");
         });
@@ -46,39 +40,13 @@ public class SelectRolePanel : UIPanel
         });
     }
 
-    private void OnRoleSelected(RoleConfiguration config)
+    private void OnCharacterSelected(CharacterConfiguration config)
     {
-        selectedRoleConfig = config;
-        roleList.SelectRole(config);
-        //Debug.Log($"已选择角色: {config.roleName}");
-        if(!isWeaponIconCreated)
-        {
-            InformationField.CreatWeaponIcon(config);
-            isWeaponIconCreated = true;
-        }
-        InformationField.ShowRoleInfo(config);
-        InformationField.RefreshWeaponIcon(config);
-        if (selectedWeaponConfig != null && config.weaponConfig.Contains(selectedWeaponConfig))
-        {
-            EventCenter.Publish<WeaponSelectedEvent, WeaponConfiguration>(selectedWeaponConfig);
-        }
-        else
-        {
-            EventCenter.Publish<WeaponSelectedEvent, WeaponConfiguration>(config.weaponConfig[0]);
-        }
-    }
+        // 更新信息面板
+        informationField.ShowRoleInfo(config);
+        informationField.RefreshWeaponIcon(config);
 
-    private void OnWeaponSelected(WeaponConfiguration config)
-    {
-        selectedWeaponConfig = config;
-        //Debug.Log($"已选择武器: {config.weaponName}");
-        if(selectedRoleConfig != null && selectedRoleConfig.weaponConfig.Contains(config))
-        {
-            InformationField.ShowWeaponInfo(config);
-        }
-        else
-        {
-            InformationField.ShowWeaponInfo(selectedRoleConfig.weaponConfig[0]);
-        }
+        //更新选中的角色
+        CharacterManager.Instance.SetSelectedCharacterConfig(config);
     }
 }

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17f3b2c3e5bc16047bc634068f6363ba, type: 3}
+  m_Name: Test1
+  m_EditorClassIdentifier: 
+  roleName: Test1
+  description: "\u89D2\u8272\u63CF\u8FF0..."
+  themeColor: {r: 0.58360565, g: 0.98490566, b: 0.21370581, a: 1}
+  characterPrefabAddress: Test1
+  maxHealth: 100
+  healthRegen: 0
+  maxEnergy: 100
+  energyRegen: 0
+  moveSpeed: 15
+  dashSpeed: 30
+  dashCooldown: 0.5
+  physicalDamage: 10
+  energyDamage: 0
+  elementalDamage: 0
+  attackInterval: 1
+  energyCostPerAttack: 0

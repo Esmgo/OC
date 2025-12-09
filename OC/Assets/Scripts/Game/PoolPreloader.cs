@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -21,30 +22,28 @@ public class PoolPreloader : MonoBehaviour
     [Tooltip("当AA资源没有指定大小时使用的默认池大小")]
     public int defaultPoolSize = 10;
 
-    [Header("预加载设置")]
-    public bool preloadOnStart = true;
-    public bool preloadOnAwake = false;
+    //[Header("预加载设置")]
+    //public bool preloadOnStart = false;
+    //public bool preloadOnAwake = false;
     
     [Header("调试设置")]
     public bool showDebugLogs = true;
 
-    private List<AsyncOperationHandle> assetHandles = new List<AsyncOperationHandle>();
+    //void Awake()
+    //{
+    //    if (preloadOnAwake)
+    //    {
+    //        PreloadPools();
+    //    }
+    //}
 
-    void Awake()
-    {
-        if (preloadOnAwake)
-        {
-            PreloadPools();
-        }
-    }
-
-    void Start()
-    {
-        if (preloadOnStart && !preloadOnAwake)
-        {
-            PreloadPools();
-        }
-    }
+    //void Start()
+    //{
+    //    if (preloadOnStart && !preloadOnAwake)
+    //    {
+    //        PreloadPools();
+    //    }
+    //}
 
     [ContextMenu("Preload All Pools")]
     public void PreloadPools()
@@ -70,7 +69,7 @@ public class PoolPreloader : MonoBehaviour
         yield return StartCoroutine(PreloadConfiguredPoolsCoroutine());
 
         // 2. 预加载AA标签资源池
-        yield return StartCoroutine(PreloadAddressablePoolsCoroutine());
+        //yield return StartCoroutine(PreloadAddressablePoolsCoroutine());
 
         if (showDebugLogs)
             Debug.Log("对象池预加载完成！");
@@ -87,17 +86,17 @@ public class PoolPreloader : MonoBehaviour
             {
                 try
                 {
-                    var pool = ObjectPoolManager.Instance.GetOrCreatePool(
-                        config.poolName, 
-                        config.prefab, 
-                        config.size
-                    );
+                    //var pool = ObjectPoolManager.Instance.GetOrCreatePool(
+                    //    config.poolName, 
+                    //    config.prefab, 
+                    //    config.size
+                    //);
                     
-                    // 预热池
-                    pool.Prewarm(config.size);
+                    //// 预热池
+                    ////pool.Prewarm(config.size);
                     
-                    if (showDebugLogs)
-                        Debug.Log($"创建池: {config.poolName}, 大小: {config.size}");
+                    //if (showDebugLogs)
+                    //    Debug.Log($"创建池: {config.poolName}, 大小: {config.size}");
                 }
                 catch (System.Exception e)
                 {
@@ -117,63 +116,65 @@ public class PoolPreloader : MonoBehaviour
     /// <summary>
     /// 预加载AA标签资源池
     /// </summary>
-    private System.Collections.IEnumerator PreloadAddressablePoolsCoroutine()
-    {
-        foreach (string label in addressableLabels)
-        {
-            if (string.IsNullOrEmpty(label)) continue;
+    //private async Task<System.Collections.IEnumerator> PreloadAddressablePoolsCoroutine()
+    //{
+    //    foreach (string label in addressableLabels)
+    //    {
+    //        if (string.IsNullOrEmpty(label)) continue;
 
-            if (showDebugLogs)
-                Debug.Log($"开始加载AA标签: {label}");
+    //        if (showDebugLogs)  Debug.Log($"对象池预加载，标签: {label}");
 
-            // 创建加载任务但使用协程等待
-            var loadTask = Tools.LoadAddressablesByLabel<GameObject>(label, true);
+    //        var loadedPrefabs = await ResourceManager.Instance.LoadResourcesByLabelAsync<GameObject>(label);
 
-            // 等待任务完成
-            while (!loadTask.IsCompleted)
-            {
-                yield return null;
-            }
-            var prefabs = loadTask.Result;
+    //        if (loadedPrefabs == null || loadedPrefabs.Count == 0) continue;
 
-            if (prefabs != null && prefabs.Count > 0)
-            {
-                foreach (var prefab in prefabs)
-                {
-                    if (prefab != null)
-                    {
-                        string poolName = prefab.name;
+    //        foreach(var prefab in loadedPrefabs)
+    //        {
+    //            if (prefab)
+    //            {
+    //                string poolName = prefab.name;
 
-                        if (IsPoolAlreadyConfigured(poolName))
-                        {
-                            if (showDebugLogs)
-                                Debug.Log($"跳过已配置的池: {poolName}");
-                            continue;
-                        }
+    //            }
+    //        }
 
-                        int poolSize = GetSuggestedPoolSize(prefab);
+    //            if (prefabs != null && prefabs.Count > 0)
+    //        {
+    //            foreach (var prefab in prefabs)
+    //            {
+    //                if (prefab != null)
+    //                {
+    //                    string poolName = prefab.name;
 
-                        var pool = ObjectPoolManager.Instance.GetOrCreatePool(
-                            poolName,
-                            prefab,
-                            poolSize
-                        );
+    //                    if (IsPoolAlreadyConfigured(poolName))
+    //                    {
+    //                        if (showDebugLogs)
+    //                            Debug.Log($"跳过已配置的池: {poolName}");
+    //                        continue;
+    //                    }
 
-                        pool.Prewarm(poolSize);
+    //                    int poolSize = GetSuggestedPoolSize(prefab);
 
-                        if (showDebugLogs)
-                            Debug.Log($"从AA标签 {label} 创建池: {poolName}, 大小: {poolSize}");
-                    }
-                    yield return null;
-                    }
-                }
-            else
-            {
-            Debug.LogWarning($"AA标签 {label} 没有加载到任何资源");
-            }
-        yield return null;
-        }
-    }
+    //                    var pool = ObjectPoolManager.Instance.GetOrCreatePool(
+    //                        poolName,
+    //                        prefab,
+    //                        poolSize
+    //                    );
+
+    //                    pool.Prewarm(poolSize);
+
+    //                    if (showDebugLogs)
+    //                        Debug.Log($"从AA标签 {label} 创建池: {poolName}, 大小: {poolSize}");
+    //                }
+    //                yield return null;
+    //                }
+    //            }
+    //        else
+    //        {
+    //        Debug.LogWarning($"AA标签 {label} 没有加载到任何资源");
+    //        }
+    //    yield return null;
+    //    }
+    //}
 
     /// <summary>
     /// 检查池是否已经在配置中存在
@@ -274,10 +275,10 @@ public class PoolPreloader : MonoBehaviour
     private void ReleaseAssetHandles()
     {
         // 使用Tools类的清理方法来释放所有缓存的Addressable资源
-        Tools.ClearAddressableCache();
+        //Tools.ClearAddressableCache();
         
         // 清空本地句柄列表
-        assetHandles.Clear();
+        //assetHandles.Clear();
     }
 
     void OnDestroy()

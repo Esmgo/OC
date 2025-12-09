@@ -93,7 +93,7 @@ public class BulletBase : MonoBehaviour, IPoolable
     private void ReturnToPool()
     {
         isActive = false;
-        ObjectPoolManager.Instance.ReturnObject(GetComponent<PooledObject>().GetPoolName(), gameObject);
+        ObjectPoolManager.Instance.ReturnObject(gameObject);
     }
 
     void OnTriggerEnter2D(Collider2D other)

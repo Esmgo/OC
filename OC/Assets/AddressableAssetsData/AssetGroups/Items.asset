@@ -21,25 +21,25 @@ MonoBehaviour:
     m_Address: ItemConfig/Apple
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Item
+    - item
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bb5e1a4766bc2f04e8b6d3bd82b05776
     m_Address: ItemConfig/PapyrusManuscript
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Item
+    - item
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ccc4b1fffa040e7448c9c6352ae00895
     m_Address: ItemConfig/HolyGrail
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Item
+    - item
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d81cc1911b0846f45a8e570bd024fecc
     m_Address: ItemConfig/Banana
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Item
+    - item
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6dcdf24673c656f468b546b4a2f14bdc, type: 2}

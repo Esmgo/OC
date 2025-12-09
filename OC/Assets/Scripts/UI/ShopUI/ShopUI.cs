@@ -22,7 +22,7 @@ public class ShopUI : UIPanel
     private List<ItemConfiguration> itemsForSaleConfigs;
 
     [Header("运行时数据")]
-    private Character character;
+    private CharacterComponent character;
     private List<GameObject> itemCreated = new();
     private bool isInitialized = false;
     private bool isCreatingItems = false;
@@ -37,7 +37,7 @@ public class ShopUI : UIPanel
 
     public override void OnOpen()
     {
-        character = Tools.GetCharacter();
+        character = CharacterManager.Instance.currentCharacter;
         if (character == null)
         {
             Debug.LogError("ShopUI: 角色为空，无法打开商店！");
@@ -45,7 +45,7 @@ public class ShopUI : UIPanel
         }
 
         // 订阅事件总是在最前面，确保不会错过任何变化
-        character.OnStatChanged += UpdateInfoDisplay;
+        //character.OnStatChanged += UpdateInfoDisplay;
 
         if (!isInitialized)
         {
@@ -65,7 +65,7 @@ public class ShopUI : UIPanel
     {
         if (character != null)
         {
-            character.OnStatChanged -= UpdateInfoDisplay;
+            //character.OnStatChanged -= UpdateInfoDisplay;
         }
     }
 
@@ -85,7 +85,7 @@ public class ShopUI : UIPanel
         list = transform.Find("List").gameObject;
 
         // 异步加载资源
-        itemForSalePrefab = await Tools.LoadAddressable<GameObject>("ItemForSale");
+        itemForSalePrefab = await ResourceManager.Instance.LoadResourceAsync<GameObject>("ItemForSalePrefab", "prefab");
         await LoadItemConfigurations();
 
         // --- 2. 注册按钮事件 ---
@@ -111,15 +111,7 @@ public class ShopUI : UIPanel
     /// </summary>
     private async Task LoadItemConfigurations()
     {
-        try
-        {
-            itemsForSaleConfigs = await Tools.LoadAddressablesByLabel<ItemConfiguration>("Item");
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"加载Item标签资源失败: {ex.Message}");
-            itemsForSaleConfigs = new List<ItemConfiguration>();
-        }
+        itemsForSaleConfigs = await ResourceManager.Instance.LoadResourcesByLabelAsync<ItemConfiguration>("item");
     }
 
     #endregion
@@ -181,17 +173,17 @@ public class ShopUI : UIPanel
         if (!isInitialized || character == null) return;
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"最大生命值<pos=60%>{character.currentMaxHealth}");
-        sb.AppendLine($"生命回复<pos=60%>{character.currentHealthRegenRate:F1}/秒");
-        sb.AppendLine($"最大能量值<pos=60%>{character.currentMaxEnergy}");
-        sb.AppendLine($"能量回复<pos=60%>{character.currentEnergyRegenRate:F1}/秒");
-        sb.AppendLine($"冷却缩减<pos=60%>{character.currentCooldownReductionPercent * 100:F0}%");
-        sb.AppendLine($"冲刺冷却<pos=60%>{character.currentDashCoolDown:F1}秒");
-        sb.AppendLine($"移动速度<pos=60%>{character.currentMoveSpeed:F1}");
-        sb.AppendLine($"攻击间隔<pos=60%>{character.currentAttackInterval:F2}秒");
-        sb.AppendLine($"物理伤害<pos=60%>{character.currentPhysicalDamage:F0}");
-        sb.AppendLine($"异能伤害<pos=60%>{character.currentManaDamage:F0}");
-        sb.AppendLine($"元素伤害<pos=60%>{character.currentElementalDamage:F0}");
+        //sb.AppendLine($"最大生命值<pos=60%>{character.currentMaxHealth}");
+        //sb.AppendLine($"生命回复<pos=60%>{character.currentHealthRegenRate:F1}/秒");
+        //sb.AppendLine($"最大能量值<pos=60%>{character.currentMaxEnergy}");
+        //sb.AppendLine($"能量回复<pos=60%>{character.currentEnergyRegenRate:F1}/秒");
+        //sb.AppendLine($"冷却缩减<pos=60%>{character.currentCooldownReductionPercent * 100:F0}%");
+        //sb.AppendLine($"冲刺冷却<pos=60%>{character.currentDashCoolDown:F1}秒");
+        //sb.AppendLine($"移动速度<pos=60%>{character.currentMoveSpeed:F1}");
+        //sb.AppendLine($"攻击间隔<pos=60%>{character.currentAttackInterval:F2}秒");
+        //sb.AppendLine($"物理伤害<pos=60%>{character.currentPhysicalDamage:F0}");
+        //sb.AppendLine($"异能伤害<pos=60%>{character.currentManaDamage:F0}");
+        //sb.AppendLine($"元素伤害<pos=60%>{character.currentElementalDamage:F0}");
 
         plyerInfoText.text = sb.ToString();
     }
@@ -218,7 +210,7 @@ public class ShopUI : UIPanel
 
     private async void OnContinueClicked()
     {
-        EnemyManager.Instance.StartWave();
+        EnemyManager.Instance.StartNextWave();
         await UIManager.Instance.OpenPanelAsync<FightUI>("FightUI");
         UIManager.Instance.ClosePanel("ShopUI");
     }

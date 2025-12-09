@@ -40,10 +40,14 @@ public class FightUI : UIPanel
         originalTextUpPos = textUp.transform.localPosition;
         originalTextDownPos = textDown.transform.localPosition;
 
-        EventCenter.Publish<UpdateInfoDisplayEvent, Character>(Tools.GetCharacter());
     }
 
     public override void OnClose()
+    {
+        EventCenter.Unsubscribe<WaveCompletedEvent>(WaveCompleted);
+    }
+
+    private void OnDestroy()
     {
         EventCenter.Unsubscribe<WaveCompletedEvent>(WaveCompleted);
     }

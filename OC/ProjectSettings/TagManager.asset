@@ -12,8 +12,8 @@ TagManager:
   - Water
   - UI
   - Weapon
-  - Enemy
   - Role
+  - Enemy
   - Bullet
   - Item
   - BuffCircle
@@ -44,11 +44,11 @@ TagManager:
   - name: Scene-Ground
     uniqueID: 4270776683
     locked: 0
-  - name: Enemy
-    uniqueID: 3054169223
-    locked: 0
   - name: Player
     uniqueID: 4081663975
+    locked: 0
+  - name: Enemy
+    uniqueID: 3054169223
     locked: 0
   - name: Item
     uniqueID: 3885722317

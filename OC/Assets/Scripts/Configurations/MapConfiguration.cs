@@ -16,8 +16,6 @@ public class MapConfiguration : ScriptableObject
 [Serializable]
 public class WaveConfiguration
 {
-    [Tooltip("波次编号")]
-    public int waveNumber; // 波次编号
     [Tooltip("敌人预制体列表")]
-    public List<GameObject> enemyPrefabs = new List<GameObject>(); // 敌人预制体列表
+    public List<EnemyConfiguration> enemyConfigs = new(); // 敌人预制体列表
 }

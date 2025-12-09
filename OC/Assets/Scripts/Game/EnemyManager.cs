@@ -1,42 +1,47 @@
 using GameEvents;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
+//[ExecuteAlways] // 确保在编辑器模式下也能运行 OnDrawGizmos
 public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager Instance { get; private set; }
 
-    [Header("生成参数")]
-    public int maxEnemyCount = 50; // 敌人最大数量
-    public float minSpawnRadius = 5f; // 最小生成半径（玩家为中心）
-    public float maxSpawnRadius = 12f; // 最大生成半径（玩家为中心）
+    [Header("全局生成参数")]
+    [Tooltip("场景中允许存在的最大敌人数量")]
+    public int maxEnemyCount = 50;
+    [Tooltip("每次集中生成的敌人数量")]
+    public int enemiesPerCluster = 3;
+    [Tooltip("集中生成点周围的半径")]
+    public float clusterRadius = 3f;
 
-    public Transform character => Tools.GetCharacter().transform; // 玩家对象
+    [Header("全局生成范围")]
+    [Tooltip("敌人生成的中心区域")]
+    public Vector2 globalSpawnCenter = Vector2.zero;
+    [Tooltip("敌人生成区域的最大半径")]
+    public float globalSpawnRadius = 20f;
 
-    private MapConfiguration currentMapConfig; // 当前地图配置
+    [Header("波次控制")]
+    [Tooltip("每波开始时的生成延迟")]
+    [SerializeField] private float initialSpawnDelay = 2f;
+    [Tooltip("波次中每次生成的间隔")]
+    [SerializeField] private float spawnInterval = 2f;
+    [Tooltip("每波的持续时间（秒）")]
+    [SerializeField] private int waveTime = 60;
 
-    private List<GameObject> enemyPrefabs = new(); // 敌人预制体数组
+    // 内部状态
+    public float waveTimer { get; private set; }
 
+    private MapConfiguration currentMapConfig;
+    private List<EnemyConfiguration> currentEnemyConfigs = new();
+    private int activeEnemyCount = 0;
+    private int currentWaveIndex = 0;
+    
+    private float spawnTimer = 0f;
+    private bool isWaveActive = false;
 
-    [Header("对象池配置")]
-    public int poolSizePerEnemyType = 20; // 每种敌人类型的池大小
-
-    public int activeEnemyCount = 0;
-    private float timer = 0f;
-    private float spawnDelayTimer = 0f;
-    private bool delayFinished = false;
-
-    [Header("生成控制")]
-    [SerializeField]private float spawnDelay = 2f; // 开始生成延迟（秒）
-    [SerializeField]private float spawnInterval = 2f; // 生成间隔（秒）
-    public float waveTimer = 0f; // 用于波次生成的计时器
-    private int currentWaveIndex = 0; // 当前波次索引
-    public bool spawnEnabled = true; // 敌人生成开关
-    private bool waveEnded = false; // 添加波次结束标志
-    [SerializeField]private int waveTime = 10;//每波持续时间，单位秒
-
+    #region Unity生命周期
     void Awake()
     {
         if (Instance == null)
@@ -47,313 +52,196 @@ public class EnemyManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-            return;
-        }
-
-        //// 可选：自动查找玩家
-        //if (character == null)
-        //{
-        //    var moveObj = FindObjectOfType<MoveBase>();
-        //    if (moveObj != null)
-        //        character = moveObj.transform;
-        //}
-    }
-
-    private void OnEnable()
-    {
-        
-    }
-
-    private void OnDestroy()
-    {
-        EventCenter.Unsubscribe<EnemyDiedEvent>(OnEnemyDead);
-    }
-
-    public void Init(MapConfiguration mapConfig)
-    {
-        currentMapConfig = mapConfig;
-
-        EventCenter.Subscribe<EnemyDiedEvent>(OnEnemyDead);
-
-        currentWaveIndex = 0;
-        SetSpawnEnabled(false);
-        ResetWaveState();
-    }
-
-    /// <summary>
-    /// 重置波次状态，用于开始新的波次
-    /// </summary>
-    public void ResetWaveState()
-    {
-        waveTimer = 0f;
-        waveEnded = false;
-        timer = 0f;
-        spawnDelayTimer = 0f;
-        delayFinished = false;
-    }
-
-    /// <summary>
-    /// 初始化敌人对象池
-    /// </summary>
-    private void InitializeEnemyPools()
-    {
-        if (ObjectPoolManager.Instance == null)
-        {
-            Debug.LogError("ObjectPoolManager实例未找到！");
-            return;
-        }
-
-        // 为每种敌人类型创建对象池
-        for (int i = 0; i < enemyPrefabs.Count; i++)
-        {
-            if (enemyPrefabs[i] != null)
-            {
-                string poolName = enemyPrefabs[i].name;
-                ObjectPoolManager.Instance.GetOrCreatePool(poolName, enemyPrefabs[i], poolSizePerEnemyType);
-                Debug.Log($"创建敌人池: {poolName}");
-            }
         }
     }
 
-    /// <summary>
-    /// 获取敌人池名称
-    /// </summary>
-    private string GetEnemyPoolName(int enemyTypeIndex)
+    void OnEnable()
     {
-        return enemyPrefabs[enemyTypeIndex].name;
+        EventCenter.Subscribe<EnemyDiedEvent>(OnEnemyDied);
+    }
+
+    void OnDisable()
+    {
+        EventCenter.Unsubscribe<EnemyDiedEvent>(OnEnemyDied);
     }
 
     void Update()
     {
-        //减少敌人update调用，统一管理
-        { }
+        if (!isWaveActive) return;
 
-        if (!spawnEnabled || character == null) return;
+        HandleWaveTimer();
+        HandleEnemySpawning();
+    }
+    #endregion
 
-        // 延迟处理
-        if (!delayFinished)
+    #region 公共方法
+    /// <summary>
+    /// 初始化敌人管理器并准备第一波
+    /// </summary>
+    public void Init(MapConfiguration mapConfig)
+    {
+        currentMapConfig = mapConfig;
+        currentWaveIndex = 0;
+        activeEnemyCount = 0;
+        isWaveActive = false;
+    }
+
+    /// <summary>
+    /// 开始新的一波
+    /// </summary>
+    public void StartNextWave()
+    {
+        if (currentMapConfig == null || currentWaveIndex >= currentMapConfig.waveConfigurations.Count)
         {
-            spawnDelayTimer += Time.deltaTime;
-            if (spawnDelayTimer >= spawnDelay)
-            {
-                delayFinished = true;
-            }
+            Debug.LogWarning("所有波次已完成或地图配置无效！");
+            // 在此可以触发游戏胜利等逻辑
             return;
         }
 
-        // 定时生成敌人
-        timer += Time.deltaTime;
-        if (timer >= spawnInterval && activeEnemyCount < maxEnemyCount)
-        {
-            SpawnEnemy();
-            timer = 0f;
-        }
+        // 清理上一波的敌人
+        ClearAllEnemies();
 
-        if (waveTimer < waveTime)
+        // 设置当前波的敌人类型
+        currentEnemyConfigs = currentMapConfig.waveConfigurations[currentWaveIndex].enemyConfigs;
+
+        // 重置计时器和状态
+        waveTimer = waveTime;
+        spawnTimer = initialSpawnDelay; // 应用初始延迟
+        isWaveActive = true;
+
+        Debug.Log($"第 {currentWaveIndex + 1} 波开始！");
+
+        currentWaveIndex++;
+    }
+
+    /// <summary>
+    /// 回收所有当前活跃的敌人
+    /// </summary>
+    public void ClearAllEnemies()
+    {
+        if (ObjectPoolManager.Instance != null)
         {
-            waveTimer += Time.deltaTime;
+            foreach (var config in currentEnemyConfigs)
+            {
+                ObjectPoolManager.Instance.RecycleAllActiveObjects(config.prefabAddress);
+            }
         }
-        else if (!waveEnded)
+        activeEnemyCount = 0;
+        Debug.Log("已回收所有活跃敌人。");
+    }
+    #endregion
+
+    #region 内部逻辑
+    /// <summary>
+    /// 处理波次计时
+    /// </summary>
+    private void HandleWaveTimer()
+    {
+        waveTimer -= Time.deltaTime;
+        if (waveTimer <= 0)
         {
-            waveEnded = true;
-            StartCoroutine(EndWaveAndOpenShop());
+            isWaveActive = false;
+            StartCoroutine(EndWaveSequence());
         }
     }
 
     /// <summary>
-    /// 结束当前波次并打开商店
+    /// 处理敌人生成计时和逻辑
     /// </summary>
-    private IEnumerator EndWaveAndOpenShop()
+    private void HandleEnemySpawning()
     {
-        //清除所有敌人
-        ClearAllEnemies();
-        
-        //停止敌人生成
-        SetSpawnEnabled(false);
-
-        ResetWaveState();
-
-        EventCenter.Publish<WaveCompletedEvent>();
-
-        yield return null;
-        //UIManager.Instance.ClosePanel("FightUI");
-
-        ////异步打开商店UI
-        //var shopTask = UIManager.Instance.OpenPanelAsync<ShopUI>("ShopUI");
-        //yield return new WaitUntil(() => shopTask.IsCompleted);
-
-        //if (shopTask.Exception != null)
-        //{
-        //    Debug.LogError($"打开商店失败: {shopTask.Exception}");
-        //}
-        //else
-        //{
-        //    shopTask.Result?.OnOpen();
-        //    Debug.Log("商店已打开");
-        //}
+        spawnTimer -= Time.deltaTime;
+        if (spawnTimer <= 0 && activeEnemyCount < maxEnemyCount)
+        {
+            SpawnEnemyCluster();
+            spawnTimer = spawnInterval; // 重置为常规生成间隔
+        }
     }
 
-    private void SpawnEnemy()
+    /// <summary>
+    /// 波次结束后的处理序列
+    /// </summary>
+    private IEnumerator EndWaveSequence()
     {
-        if (enemyPrefabs.Count == 0) return;
+        Debug.Log($"第 {currentWaveIndex} 波结束。");
+        ClearAllEnemies();
 
-        Vector2 spawnPosition = GetRandomPositionAroundPlayer();
+        // 此处可以添加打开商店等逻辑
+         yield return UIManager.Instance.OpenPanelAsync<ShopUI>("ShopUI");
+        //yield return new WaitForSeconds(1f); // 等待1秒，准备下一波
         
-        // 随机选择一种敌人类型
-        int enemyTypeIndex = Random.Range(0, enemyPrefabs.Count);
-        string poolName = GetEnemyPoolName(enemyTypeIndex);
-        
-        // 从对象池获取敌人
-        GameObject enemy = ObjectPoolManager.Instance.GetObject(poolName, spawnPosition, Quaternion.identity);
-        
+        // 示例：自动开始下一波
+        // StartNextWave(); 
+    }
+
+    /// <summary>
+    /// 在指定区域内生成一簇敌人
+    /// </summary>
+    private void SpawnEnemyCluster()
+    {
+        if (currentEnemyConfigs.Count == 0) return;
+
+        Vector2 clusterCenter = GetRandomPositionInGlobalRange();
+
+        for (int i = 0; i < enemiesPerCluster; i++)
+        {
+            if (activeEnemyCount >= maxEnemyCount) break;
+
+            Vector2 spawnPosition = clusterCenter + Random.insideUnitCircle * clusterRadius;
+
+            SpawnEnemy(currentEnemyConfigs[Random.Range(0, currentEnemyConfigs.Count)], spawnPosition);
+        }
+    }
+
+    /// <summary>
+    /// 使用EntityFactory异步生成单个敌人
+    /// </summary>
+    private async void SpawnEnemy(EnemyConfiguration config, Vector2 spawnPosition)
+    {
+        GameObject enemy = await EntityFactory.Instance.CreatEntityAsync(config.prefabAddress, true);
+        enemy.transform.position = spawnPosition;
+        enemy.GetComponent<EnemyComponent>().Init(config);
         if (enemy != null)
         {
             activeEnemyCount++;
         }
         else
         {
-            Debug.LogWarning($"无法从池 {poolName} 获取敌人对象");
+            Debug.LogWarning($"无法从工厂创建敌人: {config.prefabAddress}");
         }
     }
 
     /// <summary>
-    /// 获取玩家周围的随机位置
+    /// 在全局生成范围内获取一个随机位置
     /// </summary>
-    /// <returns></returns>
-    private Vector2 GetRandomPositionAroundPlayer()
+    private Vector2 GetRandomPositionInGlobalRange()
     {
-        if (character == null) return Vector2.zero;
-        
         float angle = Random.Range(0f, Mathf.PI * 2f);
-        float radius = Random.Range(minSpawnRadius, maxSpawnRadius);
+        float radius = Random.Range(0f, globalSpawnRadius);
         Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
-        return (Vector2)character.position + offset;
+        return globalSpawnCenter + offset;
     }
 
     /// <summary>
-    /// 回收所有敌人到对象池（简化版本）
+    /// 敌人死亡事件的回调
     /// </summary>
-    public void ClearAllEnemies()
+    private void OnEnemyDied()
     {
-        if (ObjectPoolManager.Instance != null)
+        if (activeEnemyCount > 0)
         {
-            // 使用新的回收方法，更高效
-            foreach (var prefab in enemyPrefabs)
-            {
-                if (prefab != null)
-                {
-                    string poolName = prefab.name;
-                    ObjectPoolManager.Instance.RecycleAllActiveObjects(poolName);
-                }
-            }
+            activeEnemyCount--;
         }
-        
-        activeEnemyCount = 0;
-        timer = 0f;
-        spawnDelayTimer = 0f;
-        delayFinished = false;
-        Debug.Log("回收所有敌人到对象池");
     }
+    #endregion
 
+    #region 编辑器可视化
     /// <summary>
-    /// 强制清除所有敌人（用于紧急情况）
+    /// 在编辑器中绘制生成范围的辅助线
     /// </summary>
-    public void ForceClearAllEnemies()
+    private void OnDrawGizmos()
     {
-        if (ObjectPoolManager.Instance != null)
-        {
-            foreach (var prefab in enemyPrefabs)
-            {
-                if (prefab != null)
-                {
-                    string poolName = prefab.name;
-                    ObjectPoolManager.Instance.ForceRecycleAllActiveObjects(poolName);
-                }
-            }
-        }
-        
-        activeEnemyCount = 0;
-        timer = 0f;
-        spawnDelayTimer = 0f;
-        delayFinished = false;
-        Debug.Log("强制回收所有敌人到对象池");
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(globalSpawnCenter, globalSpawnRadius);
     }
-
-    /// <summary>
-    /// 敌人死亡触发
-    /// </summary>
-    private void OnEnemyDead()
-    {
-        activeEnemyCount--;
-    }
-
-    /// <summary>
-    /// 启用/禁用敌人生成
-    /// </summary>
-    public void SetSpawnEnabled(bool enabled)
-    {
-        spawnEnabled = enabled;
-    }
-
-    /// <summary>
-    /// 开始新的一波敌人生成
-    /// </summary>
-    /// <param name="mapConfig"></param>
-    public void StartWave()
-    {
-        if(currentWaveIndex < currentMapConfig.waveConfigurations.Count)
-        {
-            ResetWaveState();
-            ClearAllEnemies();
-            enemyPrefabs = currentMapConfig.waveConfigurations[currentWaveIndex].enemyPrefabs;
-            InitializeEnemyPools();
-            currentWaveIndex++;
-        }
-        else
-        {
-            Debug.LogWarning("没有更多波次可供生成！");
-        }
-        SetSpawnEnabled(true);
-        EventCenter.Publish<WaveStartEvent>();
-        Debug.Log($"开始波次{currentWaveIndex}");
-    }
-
-    /// <summary>
-    /// 获取当前活跃敌人数量
-    /// </summary>
-    public int GetActiveEnemyCount()
-    {
-        return activeEnemyCount;
-    }
-
-    /// <summary>
-    /// 获取指定类型敌人池的统计信息
-    /// </summary>
-    public PoolStats GetEnemyPoolStats(int enemyTypeIndex)
-    {
-        if (enemyTypeIndex < 0 || enemyTypeIndex >= enemyPrefabs.Count)
-            return new PoolStats();
-
-        string poolName = GetEnemyPoolName(enemyTypeIndex);
-        return ObjectPoolManager.Instance.GetPoolStats(poolName);
-    }
-
-    /// <summary>
-    /// 打印所有敌人池的统计信息
-    /// </summary>
-    [ContextMenu("Print Enemy Pool Stats")]
-    public void PrintEnemyPoolStats()
-    {
-        Debug.Log("=== 敌人池统计信息 ===");
-        for (int i = 0; i < enemyPrefabs.Count; i++)
-        {
-            if (enemyPrefabs[i] != null)
-            {
-                var stats = GetEnemyPoolStats(i);
-                string poolName = GetEnemyPoolName(i);
-                Debug.Log($"池: {poolName} - 总数: {stats.totalObjects}, 活跃: {stats.activeObjects}, 可用: {stats.availableObjects}");
-            }
-        }
-        Debug.Log($"总活跃敌人数: {activeEnemyCount}");
-    }
+    #endregion
 }

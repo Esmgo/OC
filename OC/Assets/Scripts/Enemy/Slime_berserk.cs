@@ -6,7 +6,7 @@ public class Slime_berserk : EnemyBase
 {
     override protected void Die()
     {
-        var bc = ObjectPoolManager.Instance.GetObject<BuffCircle>("BuffCircle", transform.position);
+        //var bc = ObjectPoolManager.Instance.GetObject<BuffCircle>("BuffCircle", transform.position);
         base.Die();
     }
 }

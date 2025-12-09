@@ -167,3 +167,4 @@ MonoBehaviour:
   icon: {fileID: 8314372120367226356}
   selectedIcon: {fileID: 4829289424045239553}
   selectedColor: {r: 0.9176471, g: 0.3529412, b: 0.23529413, a: 1}
+  roleName: 

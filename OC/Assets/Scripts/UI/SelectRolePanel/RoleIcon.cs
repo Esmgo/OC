@@ -1,4 +1,5 @@
 using GameEvents;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,11 +12,13 @@ public class RoleIcon : MonoBehaviour,IPointerClickHandler
     public Image selectedIcon;
     public Color selectedColor;
     public string roleName;
-    private RoleConfiguration roleConfig;
+    private CharacterConfiguration roleConfig;
 
-    public void Init(RoleConfiguration config)
+    public Action<CharacterConfiguration> OnCharacterSelected;
+
+    public void Init(CharacterConfiguration config)
     {
-        icon.sprite = config.roleIcon;
+        //icon.sprite = config.roleIcon;
         roleName = config.roleName;
         selectedIcon.color = Color.clear;
         roleConfig = config;
@@ -23,18 +26,11 @@ public class RoleIcon : MonoBehaviour,IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        EventCenter.Publish<RoleSelectedEvent, RoleConfiguration>(roleConfig);
+        OnCharacterSelected?.Invoke(roleConfig);
     }
 
     public void SetSelected(bool state)
     {
-        if (state)
-        {
-            selectedIcon.color = selectedColor;
-        }
-        else
-        {
-            selectedIcon.color = Color.clear;
-        }
+        selectedIcon.color = state ? selectedColor : Color.clear;
     }
 }

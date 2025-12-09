@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: d0046db26ebd27140ad3eeee95a65a39
   m_currentHash:
     serializedVersion: 2
-    Hash: 79a4fd30fbd0febb70b311db25dcc5e9
+    Hash: 7c880972e2f8f047a2412ce371813624
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -90,12 +90,13 @@ MonoBehaviour:
     m_ProfileVersion: 1
   m_LabelTable:
     m_LabelNames:
-    - default
-    - RoleConfiguration
-    - Role
-    - Bullet
-    - Item
-    - Effect
+    - characterConfiguration
+    - characterPrefab
+    - item
+    - effect
+    - prefab
+    - UI
+    - enemyConfiguration
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: bb3e23ad58109454d904da9c8ee26bfb, type: 2}

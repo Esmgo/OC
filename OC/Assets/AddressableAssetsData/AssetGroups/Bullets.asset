@@ -21,7 +21,7 @@ MonoBehaviour:
     m_Address: Bullet_normal_0
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Bullet
+    - prefab
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6dcdf24673c656f468b546b4a2f14bdc, type: 2}

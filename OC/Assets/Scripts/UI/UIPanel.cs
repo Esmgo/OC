@@ -28,7 +28,17 @@ public class UIPanel : MonoBehaviour
             Debug.LogError($"物体 {buttonName} 未挂载UIButton组件");
             return;
         }
-        btn.onClick.AddListener(async () => await onClick());
+        btn.onClick.AddListener(async () => 
+        {
+            try
+            {
+                await onClick();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"按钮 {buttonName} 点击事件执行失败: {e.Message}");
+            }
+        });
     }
 
     /// <summary>

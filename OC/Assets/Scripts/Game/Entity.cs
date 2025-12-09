@@ -8,153 +8,111 @@ using UnityEngine;
 /// </summary>
 public abstract class Entity : MonoBehaviour
 { 
-    [Header("属性")]
+    [Header("通用属性")]
     protected int maxHealth;      //  最大生命
-    protected int healthRegen;   // 生命回复
-    protected int maxEnergy;      //  最大能量
-    protected int energyRegen;    // 能量回复
-    protected float cooldownReductionPercent;    // 冷却缩减百分比
-    protected float dashCoolDown;   // 冲刺冷却时间
     protected int moveSpeed;      // 移动速度
-    protected float attackInterval;    // 攻击间隔
-    protected float attackIntervalReductionPercent; // 攻击速度提升百分比
     protected int physicalDamage;     // 物理伤害
     protected int manaDamage;     // 能量伤害
     protected int elementalDamage;    // 元素伤害
+    protected float hitCoolDown;   // 受击冷却时间
+
 
     [Header("数值池(Value Pools)")]//这些用.currenValue 和 .maxValue 来访问谢谢喵
     protected ValuePool health;
-    protected ValuePool energy;
 
     protected PropertyModifier localModifier;
+
+    [Tooltip("配置文件")]
+    protected EntityConfiguration config;
 
     // 这些是最终计算出的、供其他脚本使用的值
     public int currentMaxHealth { get { return (int)health.maxValue; } private set { } }
     public int currentHealth { get { return (int)health.currentValue; } private set { } }
-    public int currentMaxEnergy { get { return (int)energy.maxValue; } private set { } }
-    public int currentEnergy { get { return (int)energy.currentValue; } private set { } }
-    public float currentHealthRegenRate { get; private set; }
-    public float currentEnergyRegenRate { get; private set; }
-    public float currentCooldownReductionPercent { get; private set; }
-    public float currentDashCoolDown { get; private set; }
     public float currentMoveSpeed { get; private set; }
-    public float currentDashSpeed { get; private set; }
-    public float currentAttackIntevalReductionPercent { get; private set; }
-    public float currentAttackInterval { get; private set; }
     public float currentPhysicalDamage { get; private set; }
     public float currentManaDamage { get; private set; }
     public float currentElementalDamage { get; private set; }
+    public float currentHitCoolDown { get; private set; }
 
     [Header("其他属性")]
-    protected float hitCoolDown;
     protected float lastHitTime = -999f;
+    protected GlobalStatModifier gsm;
 
-    #region 生命周期与事件订阅
-    protected virtual void OnEnable()
+    protected void Init(EntityConfiguration config, GlobalStatModifier gsm)
     {
-        //订阅全局加成变化事件
-        if (GlobalStatModifier.Instance != null)
-        {
-            GlobalStatModifier.Instance.OnGlobalBonusesChanged += RecalculateAllStats;
-        }
-    }
-
-    protected virtual void OnDisable()
-    {
-        if (GlobalStatModifier.Instance != null)
-        {
-            GlobalStatModifier.Instance.OnGlobalBonusesChanged -= RecalculateAllStats;
-        }
-    }
-    #endregion
-
-    public virtual void Init(RoleConfiguration config)
-    {
-        localModifier = new();
+        this.config = config;
 
         maxHealth = config.maxHealth;
-        healthRegen = config.healthRegen;
-        maxEnergy = config.maxEnergy;
-        energyRegen = config.energyRegen;
-        cooldownReductionPercent = config.cooldownReductionPercent;
-        dashCoolDown = config.dashCooldown;
         moveSpeed = config.moveSpeed;
-        attackInterval = config.attackInterval;
-        attackIntervalReductionPercent = config.attackSpeedReductionPercent;
         physicalDamage = config.physicalDamage;
-        manaDamage = config.energyDamage;
+        manaDamage = config.manaDamage;
         elementalDamage = config.elementalDamage;
         hitCoolDown = config.hitCoolDown;
 
         // 初始化 ValuePool
+        localModifier = new PropertyModifier();
         health = new ValuePool(maxHealth);
-        energy = new ValuePool(maxEnergy);
 
-        RecalculateAllStats();
+        this.gsm = gsm;
+        gsm.OnGlobalPlayerModifierChanged += RecalculateAllStats;
+    }
+
+    private void OnDestroy()
+    {
+            gsm.OnGlobalPlayerModifierChanged -= RecalculateAllStats;
     }
 
     /// <summary>
+    /// 对所有属性进行重新计算。
+    /// 实现时请调用RecalculateBaseStats(PropertyModifier globalModifier)以确保基类属性被正确计算。
+    /// </summary>
+    protected abstract void RecalculateAllStats();
+    /// <summary>
     /// 计算所有最终属性。
     /// </summary>
-    protected virtual void RecalculateAllStats()
+    protected void RecalculateBaseStats(PropertyModifier globalModifier)
     {
-        if (GlobalStatModifier.Instance == null) return;
+        if (globalModifier == null)
+        {
+            Debug.LogError("GlobalModifier is null in RecalculateAllStats!");
+            return;
+        }
 
-        var global = GlobalStatModifier.Instance.GlobalModifierForPlayer;
-
-        float finalMaxHealth = (maxHealth + localModifier.GetModifier(ModifierType.MaxHealth_Add) + global.GetModifier(ModifierType.MaxHealth_Add)) * 
-            (1 + localModifier.GetModifier(ModifierType.MaxHealth_Percent) + global.GetModifier(ModifierType.MaxHealth_Percent));
+        // 计算最终属性值
+        float finalMaxHealth = (maxHealth + localModifier.GetModifier(ModifierType.MaxHealth_Add) + globalModifier.GetModifier(ModifierType.MaxHealth_Add)) * 
+            (1 + localModifier.GetModifier(ModifierType.MaxHealth_Percent) + globalModifier.GetModifier(ModifierType.MaxHealth_Percent));
         health.SetMaxValue(Mathf.Max(finalMaxHealth,1), false);
 
-        float finalMaxEnergy = (maxEnergy + localModifier.GetModifier(ModifierType.MaxEnergy_Add) + global.GetModifier(ModifierType.MaxEnergy_Add)) *
-            (1 + localModifier.GetModifier(ModifierType.MaxEnergy_Percent) + global.GetModifier(ModifierType.MaxEnergy_Percent));
-        energy.SetMaxValue(finalMaxEnergy, false);
-
-        float healthRengen = (healthRegen + localModifier.GetModifier(ModifierType.HealthRegen_Add) + global.GetModifier(ModifierType.HealthRegen_Add)) * 
-            (1 + localModifier.GetModifier(ModifierType.HealthRegen_Percent) + global.GetModifier(ModifierType.HealthRegen_Percent));
-        currentHealthRegenRate = healthRengen > 0 ? 2.0f * Mathf.Pow(healthRengen, 0.5f) + 0.8f * Mathf.Pow(healthRengen, 0.33f) : 0;
-    
-        float energyRengen = (energyRegen + localModifier.GetModifier(ModifierType.EnergyRegen_Add) + global.GetModifier(ModifierType.EnergyRegen_Add)) *
-            (1 + localModifier.GetModifier(ModifierType.EnergyRegen_Percent) + global.GetModifier(ModifierType.EnergyRegen_Percent));
-        currentEnergyRegenRate = energyRengen > 0 ? 2.0f * Mathf.Pow(energyRengen, 0.5f) + 0.8f * Mathf.Pow(energyRengen, 0.33f) : 0;
-    
-        currentCooldownReductionPercent = cooldownReductionPercent + localModifier.GetModifier(ModifierType.CooldownReduction_Percent) + global.GetModifier(ModifierType.CooldownReduction_Percent);
-    
-        currentDashCoolDown = dashCoolDown / Mathf.Pow(2, currentCooldownReductionPercent);
-
-        float _moveSpeed = (moveSpeed + localModifier.GetModifier(ModifierType.MoveSpeed_Add) + global.GetModifier(ModifierType.MoveSpeed_Add)) * 
-            (1 + localModifier.GetModifier(ModifierType.MoveSpeed_Percent) + global.GetModifier(ModifierType.MoveSpeed_Percent));
+        float _moveSpeed = (moveSpeed + localModifier.GetModifier(ModifierType.MoveSpeed_Add) + globalModifier.GetModifier(ModifierType.MoveSpeed_Add)) * 
+            (1 + localModifier.GetModifier(ModifierType.MoveSpeed_Percent) + globalModifier.GetModifier(ModifierType.MoveSpeed_Percent));
         currentMoveSpeed = 12 * Mathf.Pow(1 + (_moveSpeed / 40), 0.7f);
 
-        currentDashSpeed = currentMoveSpeed * 2.5f;
-
-        currentAttackIntevalReductionPercent = attackIntervalReductionPercent + localModifier.GetModifier(ModifierType.AttackIntervalReduction_Percent) + global.GetModifier(ModifierType.AttackIntervalReduction_Percent);
+        currentPhysicalDamage = (physicalDamage + localModifier.GetModifier(ModifierType.PhysicalDamage_Add) + globalModifier.GetModifier(ModifierType.PhysicalDamage_Add)) *
+            (1 + localModifier.GetModifier(ModifierType.PhysicalDamage_Percent) + globalModifier.GetModifier(ModifierType.PhysicalDamage_Percent));
     
-        currentAttackInterval = attackInterval / Mathf.Pow(2, currentAttackIntevalReductionPercent);
-
-        currentPhysicalDamage = (physicalDamage + localModifier.GetModifier(ModifierType.PhysicalDamage_Add) + global.GetModifier(ModifierType.PhysicalDamage_Add)) *
-            (1 + localModifier.GetModifier(ModifierType.PhysicalDamage_Percent) + global.GetModifier(ModifierType.PhysicalDamage_Percent));
+        currentManaDamage = (manaDamage + localModifier.GetModifier(ModifierType.ManaDamage_Add) + globalModifier.GetModifier(ModifierType.ManaDamage_Add)) *
+            (1 + localModifier.GetModifier(ModifierType.ManaDamage_Percent) + globalModifier.GetModifier(ModifierType.ManaDamage_Percent));
     
-        currentManaDamage = (manaDamage + localModifier.GetModifier(ModifierType.ManaDamage_Add) + global.GetModifier(ModifierType.ManaDamage_Add)) *
-            (1 + localModifier.GetModifier(ModifierType.ManaDamage_Percent) + global.GetModifier(ModifierType.ManaDamage_Percent));
-    
-        currentElementalDamage = (elementalDamage + localModifier.GetModifier(ModifierType.ElementalDamage_Add) + global.GetModifier(ModifierType.ElementalDamage_Add)) *
-            (1 + localModifier.GetModifier(ModifierType.ElementalDamage_Percent) + global.GetModifier(ModifierType.ElementalDamage_Percent));
-
+        currentElementalDamage = (elementalDamage + localModifier.GetModifier(ModifierType.ElementalDamage_Add) + globalModifier.GetModifier(ModifierType.ElementalDamage_Add)) *
+            (1 + localModifier.GetModifier(ModifierType.ElementalDamage_Percent) + globalModifier.GetModifier(ModifierType.ElementalDamage_Percent));
 
         OnStatChanged?.Invoke();
     }
 
-    public void AddModifier(ModifierEffect effect)
+    public void AddModifier(ModifierPack effect)
     {
         if (effect == null) return;
-        localModifier.AddModifier(effect.ModifierType, effect.value);
+        localModifier.AddModifier(effect.modifierType, effect.value);
         RecalculateAllStats();
     }
 
-    public abstract void TakeDamage(float amount);
+    public abstract void TakeDamage(float physicalDamage, float energyDamage);
+    public abstract void TakeHeal(int amount);
 
     #region 事件
+    /// <summary>
+    /// RecalculateBaseStats调用时同步触发或通过子类触发，通知属性改变
+    /// </summary>
     public Action OnStatChanged;
     #endregion
 }

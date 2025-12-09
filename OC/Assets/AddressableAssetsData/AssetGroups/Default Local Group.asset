@@ -20,58 +20,66 @@ MonoBehaviour:
   - m_GUID: 004f597f0c2478343ac33e6783e0acca
     m_Address: ShopUI
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - UI
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 14efd1c9a80fdcb4c954d1f00e886a72
     m_Address: ItemForSale
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 67631dee45f6ed4418cf0d65af5c64e5
-    m_Address: TestRole_Config
+  - m_GUID: 2d32d9ae0da961a44bdf24ab8986e5a4
+    m_Address: TestEnemy1Configuration
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - enemyConfiguration
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49358fa7deed8784092a9f8c3886dddd
+    m_Address: RoleIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6df3056028de70c4a933c3fa7b0cad07
-    m_Address: Ming
+  - m_GUID: 4b53af7311b89f544937969c5c7d27be
+    m_Address: TestEnemy1
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8b25c64680b06c74f869cefac53e3fdb
     m_Address: MainPanel
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - UI
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8bde35692bb6e5b4d826f7749d0564ca
     m_Address: PausePanel
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - UI
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aff8225e1bd3959449a47cc74e4ca63c
     m_Address: FightUI
     m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b3f678430bce14d4792ad20a55d4bc99
-    m_Address: TestRole
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - UI
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ba6a5cb7b138373419eb3fa3f0a1e5ed
     m_Address: StartPanel
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - UI
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c32b2ae54a507694088b040398e4cc35
     m_Address: Effect_Boom_1
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Effect
+    - effect
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d47167f801fcea2479d7219d8d03b457
     m_Address: SelectRolePanel
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - UI
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6dcdf24673c656f468b546b4a2f14bdc, type: 2}

@@ -10,7 +10,7 @@ public class StatItemSO : ItemConfiguration
 {
     [Header("数值加成效果")]
     [Tooltip("当获取此物品时，会应用的永久性全局属性效果列表。")]
-    public List<ModifierEffect> globalEffects;
+    public List<ModifierPack> globalEffects;
 
     /// <summary>
     /// 重写 OnGet 方法，实现自动应用所有定义的全局效果。
@@ -26,7 +26,7 @@ public class StatItemSO : ItemConfiguration
         // 遍历此道具携带的所有效果，并逐一应用到全局管理器
         foreach (var effect in globalEffects)
         {
-            GlobalStatModifier.Instance.AddModifier(effect);
+            GlobalStatModifier.Instance.AddModifierForPlayer(effect);
         }
     }
 }

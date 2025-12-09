@@ -14,17 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapName: DefaultMap
   waveConfigurations:
-  - waveNumber: 0
-    enemyPrefabs:
-    - {fileID: 422069407525124228, guid: 4b53af7311b89f544937969c5c7d27be, type: 3}
-    - {fileID: 422069407525124228, guid: 84bace511ae18ba49a2ca4d73d935d92, type: 3}
-    - {fileID: 422069407525124228, guid: bd49c1627b4d6304cb1342119436a0d4, type: 3}
-  - waveNumber: 1
-    enemyPrefabs:
-    - {fileID: 422069407525124228, guid: 84bace511ae18ba49a2ca4d73d935d92, type: 3}
-  - waveNumber: 2
-    enemyPrefabs:
-    - {fileID: 422069407525124228, guid: 4b53af7311b89f544937969c5c7d27be, type: 3}
-  - waveNumber: 3
-    enemyPrefabs:
-    - {fileID: 422069407525124228, guid: 84bace511ae18ba49a2ca4d73d935d92, type: 3}
+  - enemyConfigs:
+    - {fileID: 11400000, guid: 2d32d9ae0da961a44bdf24ab8986e5a4, type: 2}
+  - enemyConfigs:
+    - {fileID: 11400000, guid: 2d32d9ae0da961a44bdf24ab8986e5a4, type: 2}

@@ -117,7 +117,7 @@ public class Property : MonoBehaviour
     private float totalenergyRegenRate;
     #endregion
 
-    public void Init(RoleConfiguration roleConfig, PropertyModifier globalModifier)
+    public void Init(CharacterConfiguration roleConfig, PropertyModifier globalModifier)
     {
         selfModifier = new();
 
